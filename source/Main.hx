@@ -22,11 +22,9 @@ class Main extends Sprite
 	{
 		super();
 		addChild(new FlxGame(WIDTH, HEIGHT, states.PlayState, 1, 60, 60, true));
-		((?dt) -> {
-			ECS.tick(dt);
+		((?dt:Dynamic) -> {
 			Timer.update(dt);
 			SyncedSin.update(dt);
-			FamiController.update(dt);
 		}).listen('preupdate');
 		#if PIXEL_PERFECT
 		FlxG.game.setFilters([new ShaderFilter(new FlxShader())]);

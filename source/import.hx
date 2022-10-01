@@ -1,5 +1,5 @@
 // Statics
-import states.PlayState.instance as PLAYSTATE;
+import util.Constants;
 
 // Utilities
 import util.AssetPaths;
