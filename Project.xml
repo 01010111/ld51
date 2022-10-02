@@ -24,7 +24,6 @@
 
 	<haxelib name="flixel" />
 	<haxelib name="zerolib-flixel" />
-	<haxelib name="echo-flixel" />
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
