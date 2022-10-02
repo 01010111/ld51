@@ -21,7 +21,7 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
-		addChild(new FlxGame(WIDTH, HEIGHT, states.PlayState, 1, 60, 60, true));
+		addChild(new FlxGame(WIDTH, HEIGHT, states.PlayState, 60, 60, true));
 		((?dt:Dynamic) -> {
 			Timer.update(dt);
 			SyncedSin.update(dt);

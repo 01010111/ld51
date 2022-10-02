@@ -4,6 +4,8 @@ import states.PlayState;
 
 var PLAYSTATE:PlayState;
 var CONSTRUCTION_MNGR:ConstructionManager;
+var WALL_MNGR:WallManager;
+var MONSTERS:MonsterManager;
 var GRID_OFFSET_X:Float = 112;
 var GRID_OFFSET_Y:Float = 32;
 var GRID_SIZE:Float = 16;
