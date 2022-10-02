@@ -9,6 +9,9 @@ class MonsterManager {
 	var monsters:Array<Monster> = [];
 	var waves:Int = 0;
 
+	public var all(get, never):Array<Monster>;
+	function get_all() return monsters;
+
 	public function new() {}
 
 	public function spawn() {
@@ -39,13 +42,11 @@ class MonsterManager {
 		}
 		var y = FlxG.height/2 - left.length * 12;
 		for (monster in left) {
-			trace('hi');
 			Type.createInstance(cast monster, [LEFT, y]);
 			y += 24;
 		}
 		y = FlxG.height/2 - right.length * 12;
 		for (monster in right) {
-			trace('hi');
 			Type.createInstance(cast monster, [RIGHT, y]);
 			y += 24;
 		}

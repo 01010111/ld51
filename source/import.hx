@@ -18,7 +18,6 @@ using zero.flixel.extensions.FlxPointExt;
 using zero.flixel.extensions.FlxSpriteExt;
 using zero.flixel.extensions.FlxTilemapExt;
 using zero.utilities.EventBus;
-using echo.FlxEcho;
 
 #if OGMO
 using zero.utilities.OgmoUtils;

@@ -10,6 +10,20 @@ class Turret extends Construction {
 		loadGraphic(Images.turret__png, true, 16, 32);
 		this.make_anchored_hitbox(16, 16);
 		aim_rot = 180;
+
+		range = 2;
+		max_range = 4;
+
+		power = 1;
+		max_power = 3;
+
+		rate = 1;
+		max_rate = 3;
+
+		allowed_special_properties = [
+			EXPLOSIVE,
+			KAMIKAZE,
+		];
 	}
 
 	function set_aim_rot(v:Float) {
