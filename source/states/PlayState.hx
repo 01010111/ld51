@@ -1,5 +1,10 @@
 package states;
 
+import objects.Spark;
+import objects.Poof;
+import objects.Projectile;
+import objects.Bullet;
+import zero.flixel.ec.ParticleEmitter;
 import util.MonsterManager;
 import objects.Gadget;
 import objects.Turret;
@@ -24,6 +29,16 @@ class PlayState extends State
 	public var object_layer:FlxTypedGroup<GameObject>;
 	public var fg_ui_layer:FlxGroup;
 
+	// particles
+	public var bullets:ParticleEmitter;
+	public var poofs:ParticleEmitter;
+	public var sparks:ParticleEmitter;
+
+	// logical layers
+	public var projectiles:FlxTypedGroup<Projectile> = new FlxTypedGroup();
+	public var monsters:FlxGroup = new FlxGroup();
+	public var walls:FlxGroup = new FlxGroup();
+
 	override function create() {
 		PLAYSTATE = this;
 		CONSTRUCTION_MNGR = new ConstructionManager();
@@ -38,6 +53,9 @@ class PlayState extends State
 		add(tile_layer = new FlxGroup());
 		add(bg_ui_layer = new FlxGroup());
 		add(object_layer = new FlxTypedGroup());
+		add(bullets = new ParticleEmitter(() -> new Bullet()));
+		add(sparks = new ParticleEmitter(() -> new Spark()));
+		add(poofs = new ParticleEmitter(() -> new Poof()));
 		add(fg_ui_layer = new FlxGroup());
 	}
 
@@ -73,6 +91,10 @@ class PlayState extends State
 		new Wall(14, 8);
 
 		new Turret(10, 7);
+		new Turret(14, 2);
+		new Turret(15, 10);
+		new Turret(3, 4);
+		new Turret(4, 8);
 
 		new Decal(CRATER, 192, 80);
 		new Decal(BANG, 144, 248, 0.25, 360.get_random());
@@ -87,6 +109,11 @@ class PlayState extends State
 	override function update(e:Float) {
 		super.update(e);
 		object_layer.sort((i,o1,o2) -> o1.my < o2.my ? -1 : 1);
+		FlxG.overlap(walls, projectiles, (w, p) -> p.kill());
+		FlxG.overlap(monsters, projectiles, (m, p) -> {
+			p.kill();
+			m.hurt(p.power);
+		});
 	}
 
 }

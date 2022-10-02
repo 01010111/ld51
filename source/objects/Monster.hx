@@ -20,14 +20,15 @@ class Monster extends GameObject {
 		new FlxTimer().start(y/16 * 0.05, t -> {
 			path = new FlxPath();
 			var nx = switch side {
-				case LEFT:32;
-				case RIGHT:FlxG.width - 32;
+				case LEFT:24;
+				case RIGHT:FlxG.width - 24;
 			}
 			path.start([FlxPoint.get(mx, my), FlxPoint.get(nx, my)], 40).onComplete = p -> {
 				new FlxTimer().start(3, t -> get_path());
 			}
 		});
 		MONSTERS.add(this);
+		PLAYSTATE.monsters.add(this);
 	}
 
 	public function get_path() {

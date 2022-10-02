@@ -5,7 +5,7 @@ import objects.Monster;
 
 class MonsterManager {
 	
-	var budget:Int = 3;
+	var budget:Int = 5;
 	var monsters:Array<Monster> = [];
 	var waves:Int = 0;
 
@@ -28,6 +28,7 @@ class MonsterManager {
 			while (monster_cost[m.string()] > b) m = monster_pile.get_random();
 			monsters.push(m);
 			b -= monster_cost[m.string()];
+			trace(m.string(), b);
 		}
 		var split = monsters.length > 3;
 		var def_side:EntrySide = Math.random() > 0.5 ? LEFT : RIGHT;
@@ -71,5 +72,5 @@ private var monster_pile = [
 ];
 
 private var monster_cost:Map<String, Int> = [
-	'GREMLIN' => 1,
+	GREMLIN.string() => 1,
 ];

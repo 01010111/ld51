@@ -39,12 +39,8 @@ class Construction extends GameObject {
 		// check current target
 		if (target != null) {
 			mp.set(target.mx, target.my);
-			if (p.distance(mp) <= r) {
-				p.put();
-				mp.put();
-				return;
-			}
-			else if (true) { // TODO: raycast
+			var target_ok = target.alive && p.distance(mp) <= r; // TODO: && raycast
+			if (target_ok) {
 				p.put();
 				mp.put();
 				return;
