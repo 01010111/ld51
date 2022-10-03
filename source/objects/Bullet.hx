@@ -14,7 +14,6 @@ class Bullet extends Projectile {
 		animation.add('play', [0,1,2,3]);
 		offset.set(11, 16);
 		setSize(2, 2);
-		trace(offset);
 		blend = OVERLAY;
 		PLAYSTATE.projectiles.add(this);
 		add_component(timer = new KillAfterTimer());

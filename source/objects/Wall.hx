@@ -8,6 +8,12 @@ class Wall extends Construction {
 		loadGraphic(Images.walls__png, true, 16, 16);
 
 		WALL_MNGR.add(this, x, y);
+		PLAYSTATE.walls.add(this);
+	}
+
+	override function kill() {
+		WALL_MNGR.remove(this);
+		super.kill();
 	}
 
 }

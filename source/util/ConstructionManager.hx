@@ -16,8 +16,6 @@ class ConstructionManager {
 	var temp_map:Array<Array<Int>> = [for (j in 0...(FlxG.height/GRID_SIZE).floor()) [for (i in 0...(FlxG.width/GRID_SIZE).floor()) 0]];
 	public function path(wx_s:Int, wy_s:Int, wx_e:Int, wy_e:Int) {
 		for (j in 0...vacancies.length) for (i in 0...vacancies[0].length) temp_map[j + (GRID_OFFSET_Y/16).floor()][i + (GRID_OFFSET_X/16).floor()] = vacancies[j][i];
-		trace(wx_s, wy_s, wx_e, wy_e);
-		for (row in temp_map) trace(row);
 		var path = temp_map.get_path({
 			start: [wx_s,wy_s],
 			end: [wx_e, wy_e],

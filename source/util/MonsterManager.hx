@@ -1,11 +1,13 @@
 package util;
 
+import zero.utilities.Vec2;
+import flixel.util.FlxTimer;
 import objects.Gremlin;
 import objects.Monster;
 
 class MonsterManager {
 	
-	var budget:Int = 5;
+	var budget:Int = 3;
 	var monsters:Array<Monster> = [];
 	var waves:Int = 0;
 
@@ -18,17 +20,38 @@ class MonsterManager {
 		get_monsters();
 		waves++;
 		if (waves % 2 == 0) budget++;
+
+		new FlxTimer().start(8, t -> spawn());
+	}
+
+	function get_next_monster() {
+		var m = monster_pile.shift();
+		monster_pile.push(m);
+		return m;
+	}
+
+	public function get_monsters_in_range(x:Float, y:Float, r:Float) {
+		var out = [];
+		var p = Vec2.get(x, y);
+		var mp = Vec2.get();
+		for (monster in monsters) {
+			if (!monster.alive) continue;
+			mp.set(monster.mx, monster.my);
+			if (p.distance(mp) <= r) out.push(monster);
+		}
+		p.put();
+		mp.put();
+		return out;
 	}
 
 	function get_monsters() {
 		var b = budget;
 		var monsters = [];
-		while (b > 0) {
-			var m = monster_pile.get_random();
-			while (monster_cost[m.string()] > b) m = monster_pile.get_random();
+		while (b > 0 && monsters.length < 10) {
+			var m = get_next_monster();
+			while (monster_cost[m.string()] > b) m = get_next_monster();
 			monsters.push(m);
 			b -= monster_cost[m.string()];
-			trace(m.string(), b);
 		}
 		var split = monsters.length > 3;
 		var def_side:EntrySide = Math.random() > 0.5 ? LEFT : RIGHT;
@@ -68,6 +91,15 @@ enum abstract MonsterType(Class<Monster>) {
 }
 
 private var monster_pile = [
+	GREMLIN,
+	GREMLIN,
+	GREMLIN,
+	GREMLIN,
+	GREMLIN,
+	GREMLIN,
+	GREMLIN,
+	GREMLIN,
+	GREMLIN,
 	GREMLIN,
 ];
 

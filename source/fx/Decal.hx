@@ -12,7 +12,16 @@ class Decal extends FlxSprite {
 		animation.frameIndex = cast sticker;
 		this.make_and_center_hitbox(0, 0);
 		active = false;
-		PLAYSTATE.tile_layer.add(this);
+		switch sticker {
+			case CRATER: PLAYSTATE.decals_a.add(this);
+			default: PLAYSTATE.decals_b.add(this);
+		}
+		blend = switch sticker {
+			case CRATER:NORMAL;
+			case BANG:MULTIPLY;
+			case BLOOD_1:MULTIPLY;
+			case BLOOD_2:MULTIPLY;
+		}
 	}
 
 }

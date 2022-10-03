@@ -10,8 +10,8 @@ class Gremlin extends Monster {
 		animation.add('walk', [0,0,1,2,3,3,4,5], 12);
 		animation.add('attack', [6,6,7,8,9,9,10,11], 40);
 
-		speed = 80;
-		health = 5;
+		speed = 60;
+		health = 3;
 	}
 
 	override function update(dt:Float) {
