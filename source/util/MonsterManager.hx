@@ -7,7 +7,7 @@ import objects.Monster;
 
 class MonsterManager {
 	
-	var budget:Int = 3;
+	var budget:Int = 1;
 	var monsters:Array<Monster> = [];
 	var waves:Int = 0;
 
@@ -21,7 +21,7 @@ class MonsterManager {
 		waves++;
 		if (waves % 2 == 0) budget++;
 
-		new FlxTimer().start(8, t -> spawn());
+		new FlxTimer().start(16, t -> spawn());
 	}
 
 	function get_next_monster() {

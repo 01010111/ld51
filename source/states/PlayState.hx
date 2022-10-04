@@ -1,5 +1,10 @@
 package states;
 
+import fx.PlacementIndicator;
+import zero.utilities.IntPoint;
+import flixel.math.FlxRect;
+import util.CardManager;
+import flixel.input.mouse.FlxMouseEventManager;
 import fx.WarningIndicator;
 import util.MeteorManager;
 import fx.Explosion;
@@ -53,15 +58,17 @@ class PlayState extends State
 	public var monsters:FlxGroup = new FlxGroup();
 	public var walls:FlxGroup = new FlxGroup();
 
+	// game stuff 
+	public var score:Int = 0;
+	public var field:FlxRect = FlxRect.get(GRID_OFFSET_X, GRID_OFFSET_Y, GRID_WIDTH * GRID_SIZE, GRID_HEIGHT * GRID_SIZE);
+	public var placement_indicator:PlacementIndicator;
+
 	override function create() {
+		FlxG.plugins.add(new FlxMouseEventManager());
 		FlxG.mouse.useSystemCursor = true;
 		PLAYSTATE = this;
-		CONSTRUCTION_MNGR = new ConstructionManager();
-		WALL_MNGR = new WallManager();
-		MONSTERS = new MonsterManager();
-		METEORS = new MeteorManager();
-		Gadget.gadgets = [];
 		add_layers();
+		init_managers();
 		init_stage();
 	}
 
@@ -79,7 +86,17 @@ class PlayState extends State
 		add(trails = new ParticleEmitter(() -> new MeteorTrail()));
 		add(explosions = new ParticleEmitter(() -> new Explosion()));
 		add(warn_ind = new ParticleEmitter(() -> new WarningIndicator()));
+		add(placement_indicator = new PlacementIndicator());
 		add(fg_ui_layer = new FlxGroup());
+	}
+	
+	function init_managers() {
+		CONSTRUCTION_MNGR = new ConstructionManager();
+		WALL_MNGR = new WallManager();
+		MONSTERS = new MonsterManager();
+		METEORS = new MeteorManager();
+		CARDS = new CardManager();
+		Gadget.gadgets = [];
 	}
 
 	function init_stage() {
@@ -96,33 +113,11 @@ class PlayState extends State
 		new Gadget((GRID_WIDTH/2).floor() - 1, (GRID_HEIGHT/2).floor(), TELEPORTER);
 		new Gadget((GRID_WIDTH/2).floor() - 1, (GRID_HEIGHT/2).floor() - 1, RADAR);
 		new Gadget((GRID_WIDTH/2).floor(), (GRID_HEIGHT/2).floor() - 1, CARD_MACHINE);
+		new Turret((GRID_WIDTH/2).floor(), (GRID_HEIGHT/2).floor());
 
-		new Wall(5, 4);
-		new Wall(5, 5);
-		new Wall(5, 6);
-		new Wall(5, 7);
-		new Wall(5, 8);
-		new Wall(6, 8);
-
-		new Wall(12, 3);
-		new Wall(13, 3);
-		new Wall(14, 3);
-		new Wall(14, 4);
-		new Wall(14, 5);
-		new Wall(14, 6);
-		new Wall(14, 7);
-		new Wall(14, 8);
-
-		new Turret(10, 7);
-		new Turret(7, 5);
-		new Turret(9, 8);
-		new Turret(14, 2);
-		new Turret(15, 10);
-		new Turret(3, 4);
-		new Turret(4, 8);
-
-		for (i in 0...16) new Turret(GRID_WIDTH.get_random().floor(), GRID_HEIGHT.get_random().floor());
-		for (i in 0...8) new Wall(GRID_WIDTH.get_random().floor(), GRID_HEIGHT.get_random().floor());
+		new objects.Card();
+		new objects.Card();
+		new objects.Card();
 
 		MONSTERS.spawn();
 	}
@@ -137,5 +132,8 @@ class PlayState extends State
 			m.hurt(p.power);
 		});
 	}
+
+	public function px_to_gx(v:Float) return ((v - GRID_OFFSET_X)/GRID_SIZE).floor();
+	public function py_to_gy(v:Float) return ((v - GRID_OFFSET_Y)/GRID_SIZE).floor();
 
 }

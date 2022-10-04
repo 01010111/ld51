@@ -7,28 +7,40 @@ import flixel.util.FlxTimer;
 
 class MeteorManager {
 	
+	var tx:Int;
+	var ty:Int;
+
 	public function new() {
 		new FlxTimer().start(3).onComplete = t -> fire();
 	}
 
+	function adjust() {
+		Math.random() > 0.5 ? tx += [-1,-1,0,1,1].get_random() : ty += [-1,-1,0,1,1].get_random();
+		tx = tx.clamp(0, GRID_WIDTH - 1).floor();
+		ty = ty.clamp(0, GRID_HEIGHT - 1).floor();
+		check_center();
+	}
+
+	function check_center() {
+		if (tx == (GRID_WIDTH/2).floor() - 1 && ty == (GRID_HEIGHT/2).floor() - 1) Math.random() > 0.5 ? tx-- : ty--;
+		if (tx == (GRID_WIDTH/2).floor() && ty == (GRID_HEIGHT/2).floor() - 1) Math.random() > 0.5 ? tx++ : ty--;
+		if (tx == (GRID_WIDTH/2).floor() - 1 && ty == (GRID_HEIGHT/2).floor()) Math.random() > 0.5 ? tx-- : ty++;
+		if (tx == (GRID_WIDTH/2).floor() && ty == (GRID_HEIGHT/2).floor()) Math.random() > 0.5 ? tx++ : ty++;
+	}
+
 	function fire() {
-		var tx = GRID_WIDTH.get_random().floor();
-		var ty = GRID_HEIGHT.get_random().floor();
+		tx = GRID_WIDTH.get_random().floor();
+		ty = GRID_HEIGHT.get_random().floor();	
+		adjust();
 		warn(3, tx, ty);
 		new FlxTimer().start(2).onComplete = t -> {
-			Math.random() > 0.5 ? tx += [-1,0,1].get_random() : ty += [-1,0,1].get_random();
-			tx = tx.clamp(0, GRID_WIDTH).floor();
-			ty = ty.clamp(0, GRID_HEIGHT).floor();
+			adjust();
 			warn(2, tx, ty);
 			new FlxTimer().start(2).onComplete = t -> {
-				Math.random() > 0.5 ? tx += [-1,0,1].get_random() : ty += [-1,0,1].get_random();
-				tx = tx.clamp(0, GRID_WIDTH).floor();
-				ty = ty.clamp(0, GRID_HEIGHT).floor();
+				adjust();
 				warn(1, tx, ty);
 				new FlxTimer().start(2).onComplete = t -> {
-					Math.random() > 0.5 ? tx += [-1,0,1].get_random() : ty += [-1,0,1].get_random();
-					tx = tx.clamp(0, GRID_WIDTH).floor();
-					ty = ty.clamp(0, GRID_HEIGHT).floor();
+					adjust();
 					warn(0, tx, ty);
 					new FlxTimer().start(2).onComplete = t -> new Meteor(
 						GRID_OFFSET_X + tx * GRID_SIZE + GRID_SIZE/2 + FlxG.width.get_random_gaussian(-FlxG.width),
@@ -40,7 +52,7 @@ class MeteorManager {
 				}
 			}
 		}
-		new FlxTimer().start(14.get_random_gaussian(6), t -> fire());
+		new FlxTimer().start(11.get_random_gaussian(9), t -> fire());
 	}
 
 	function warn(r:Int,x:Int,y:Int) {

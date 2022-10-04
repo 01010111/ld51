@@ -1,19 +1,83 @@
 package objects;
 
+import flixel.util.FlxTimer;
+import flixel.FlxSprite;
+
 class Gadget extends Construction {
 	
+	public static function get(type:GadgetType) return gadget_map[type];
+	static var gadget_map:Map<GadgetType, Gadget> = [];
 	public static var gadgets:Array<Gadget> = [];
+
+	public var gadget_type:GadgetType;
+	public var available:Bool = true;
+
+	public var util(default, set):Int = 0;
 
 	public function new(x:Int, y:Int, type:GadgetType) {
 		super(x, y, false);
+		gadget_type = type;
+		gadget_map.set(type, this);
 		loadGraphic(Images.gadgets__png, true, 16, 32);
-		animation.frameIndex = switch type {
-			case TELEPORTER:0;
-			case RADAR:1;
-			case CARD_MACHINE:2;
+		switch type {
+			case TELEPORTER:
+				animation.frameIndex = 0;
+			case RADAR:
+				animation.add('radar', [4,5,6,5], 8);
+				animation.play('radar');
+			case CARD_MACHINE:
+				animation.frameIndex = 7;
+				st = new FlxSprite();
+				st.loadGraphic(Images.numbers__png, true, 6, 7);
 		}
 		this.make_anchored_hitbox(16, 16);
 		gadgets.push(this);
+		health = 100;
+		util = 0;
+	}
+
+	function set_util(v:Int) {
+		switch gadget_type {
+			case RADAR:
+			case TELEPORTER:
+				animation.frameIndex = v;
+				if (v == 3) teleport();
+			case CARD_MACHINE: 
+				v = v.min(99).floor();
+				stamp_num(v);
+		}
+		return util = v;
+	}
+
+	var st:FlxSprite;
+	function stamp_num(v) {
+		if (v == 0) {
+			st.animation.frameIndex = 10;
+			stamp(st, 2, 19);
+			stamp(st, 8, 19);
+		}
+		else if (v < 10) {
+			st.animation.frameIndex = 10;
+			stamp(st, 2, 19);
+			st.animation.frameIndex = v;
+			stamp(st, 8, 19);
+		}
+		else {
+			st.animation.frameIndex = (v/10).floor();
+			stamp(st, 2, 19);
+			st.animation.frameIndex = v % 10;
+			stamp(st, 8, 19);
+		}
+	}
+
+	function teleport() {
+		available = false;
+		new FlxTimer().start(0.25).onComplete = t -> {
+			util = 0;
+			PLAYSTATE.score += 3;
+			if (get(CARD_MACHINE).alive) get(CARD_MACHINE).util += 3;
+			available = true;
+		}
 	}
 
 }

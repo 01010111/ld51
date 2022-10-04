@@ -39,11 +39,11 @@ class Meteor extends FlxSprite {
 	}
 
 	override function kill() {
-		var dust_num = 12;
+		var dust_num = 16;
 		for (i in 0...dust_num) {
 			PLAYSTATE.dust.fire({
 				position: FlxPoint.get(x, y),
-				velocity: (i * 360/dust_num + 15.get_random_gaussian(-15)).vector_from_angle(320.get_random(256)).to_flxpoint(),
+				velocity: (i * 360/dust_num + 15.get_random_gaussian(-15)).vector_from_angle(480.get_random(320)).to_flxpoint(),
 			});
 		}
 		PLAYSTATE.explosions.fire({ position: FlxPoint.get(x,y) });
@@ -51,6 +51,7 @@ class Meteor extends FlxSprite {
 		for (monster in MONSTERS.get_monsters_in_range(x, y, 16)) {
 			monster.hurt(8);
 		}
+		new Gold(x - 4, y - 4);
 		super.kill();
 		FlxG.camera.flash(0xD0FFFFFF, 0.1);
 		FlxG.camera.shake(0.02, 0.5);

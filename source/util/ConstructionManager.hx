@@ -1,5 +1,7 @@
 package util;
 
+import objects.Gadget;
+import flixel.system.debug.watch.WatchEntry;
 import objects.Construction;
 
 using zero.utilities.AStar;
@@ -10,11 +12,12 @@ class ConstructionManager {
 	var objects_by_id:Map<Int,Construction> = [];
 
 	public function new() {
-		for (j in 0...2) for (i in 0...2) vacancies[j + (GRID_HEIGHT/2).floor()][i + (GRID_WIDTH/2).floor()] = 1;
+		//for (j in 0...2) for (i in 0...2) vacancies[j + (GRID_HEIGHT/2).floor()][i + (GRID_WIDTH/2).floor()] = 1;
 	}
 
 	var temp_map:Array<Array<Int>> = [for (j in 0...(FlxG.height/GRID_SIZE).floor()) [for (i in 0...(FlxG.width/GRID_SIZE).floor()) 0]];
 	public function path(wx_s:Int, wy_s:Int, wx_e:Int, wy_e:Int) {
+		trace('path', wx_s, wy_s, wx_e, wy_e);
 		for (j in 0...vacancies.length) for (i in 0...vacancies[0].length) temp_map[j + (GRID_OFFSET_Y/16).floor()][i + (GRID_OFFSET_X/16).floor()] = vacancies[j][i];
 		var path = temp_map.get_path({
 			start: [wx_s,wy_s],
@@ -25,12 +28,29 @@ class ConstructionManager {
 	}
 
 	public function can_place(x:Int, y:Int) {
-		if (!is_vacant(x, y)) return false;
-		if (path(0, 0, (GRID_OFFSET_X/16 + GRID_WIDTH/2).floor(), (GRID_OFFSET_Y/16 + GRID_HEIGHT/2).floor()).length == 0) return false;
+		var _is_vacant = is_vacant(x, y);
+		if (!_is_vacant) return false;
+		
+		var _can_path = path(
+			1, 1,
+			Gadget.get(TELEPORTER).wx,
+			Gadget.get(TELEPORTER).wy
+		).length > 0;
+		trace('can place', _is_vacant, _can_path);
+		if (!_can_path) return false;
+		
 		return true;
 	}
 
-	public function is_vacant(x:Int, y:Int) return vacancies[y][x] == 0;
+	public function is_vacant(x:Int, y:Int) {
+		if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT) return false;
+		if (
+			(x == (GRID_WIDTH/2).floor() - 1 && y == (GRID_HEIGHT/2).floor() - 1) || 
+			(x == (GRID_WIDTH/2).floor() && y == (GRID_HEIGHT/2).floor() - 1) || 
+			(x == (GRID_WIDTH/2).floor() - 1 && y == (GRID_HEIGHT/2).floor()) 
+		) return false;
+		return vacancies[y][x] == 0;
+	}
 
 	function get_id(x:Int, y:Int) {
 		return y * 1000 + x;
@@ -48,6 +68,7 @@ class ConstructionManager {
 		if (!is_vacant(x, y)) return false;
 		objects_by_id.set(get_id(x, y), object);
 		if (mass) vacancies[y][x] = 1;
+		trace(vacancies);
 		return true;
 	}
 
