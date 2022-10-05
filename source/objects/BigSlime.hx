@@ -1,5 +1,6 @@
 package objects;
 
+import zero.utilities.IntPoint;
 import flixel.util.FlxTimer;
 
 class BigSlime extends Monster {
@@ -14,7 +15,7 @@ class BigSlime extends Monster {
 		animation.add('attack', [3,4,5,6,7,6,5,4], 20);
 
 		speed = 40;
-		health = 5;
+		health = 12;
 	}
 
 	override function update(dt:Float) {
@@ -28,17 +29,17 @@ class BigSlime extends Monster {
 	var sy = [-1,0,1].shuffle();
 
 	override function kill() {
-		for (i in 0...2) {
-			var ix = 0;
-			while (ix < 3 && CONSTRUCTION_MNGR.get_obj_at_coord(gx + sx[0], gy + sy[0]) != null) {
-				sx.push(sx.shift());
-				sy.push(sy.shift());
-				ix++;
-			}
-			if (ix == 3) continue;
-			sx.push(sx.shift());
-			sy.push(sy.shift());
-			new FlxTimer().start(i * 0.1).onComplete = t -> new LittleSlime((x + sx[0]*16).snap_to_grid(16, 5), (y + sy[0]*16).snap_to_grid(16, 5));
+		var sel = [];
+		for (j in -1...2) for (i in -1...2) {
+			if (CONSTRUCTION_MNGR.get_obj_at_coord(gx + i, gy + j) == null) sel.push(IntPoint.get(gx + i, gy + j));
+		}
+		sel.shuffle();
+		for (i in 0...3) {
+			var p = sel.shift();
+			if (p != null) new LittleSlime(
+				p.x * GRID_SIZE + GRID_OFFSET_X + 5, 
+				p.y * GRID_SIZE + GRID_OFFSET_Y + 5
+			);
 		}
 		super.kill();
 	}

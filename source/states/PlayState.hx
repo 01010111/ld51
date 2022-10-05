@@ -1,5 +1,9 @@
 package states;
 
+import flixel.tweens.FlxTween;
+import flixel.FlxSprite;
+import fx.Spotlight;
+import haxe.Timer;
 import fx.Nugget;
 import fx.Beam;
 import fx.Star;
@@ -46,6 +50,7 @@ class PlayState extends State
 	public var object_layer:FlxTypedGroup<GameObject>;
 	public var foreground_layer:FlxGroup;
 	public var fg_ui_layer:FlxGroup;
+	public var flash_layer:FlxSprite;
 
 	// particles
 	public var bullets:ParticleEmitter;
@@ -58,6 +63,7 @@ class PlayState extends State
 	public var stars:ParticleEmitter;
 	public var beams:ParticleEmitter;
 	public var nuggets:ParticleEmitter;
+	public var spotlights:ParticleEmitter;
 
 	// logical layers
 	public var projectiles:FlxTypedGroup<Projectile> = new FlxTypedGroup();
@@ -97,6 +103,11 @@ class PlayState extends State
 		add(stars = new ParticleEmitter(() -> new Star()));
 		add(beams = new ParticleEmitter(() -> new Beam()));
 		add(fg_ui_layer = new FlxGroup());
+		add(spotlights = new ParticleEmitter(() -> new Spotlight()));
+		add(flash_layer = new FlxSprite());
+		flash_layer.makeGraphic(FlxG.width, FlxG.height);
+		flash_layer.blend = ADD;
+		flash_layer.alpha = 0;
 	}
 	
 	function init_managers() {
@@ -109,24 +120,14 @@ class PlayState extends State
 	}
 
 	function init_stage() {
-		var level = OgmoUtils.parse_level_json(Assets.getText(Data.stage__json));
-		var tiles = new Tilemap({
-			data: level.get_tile_layer('tiles').data2D,
-			tile_width: 16,
-			tile_height: 16,
-			tiles: Images.tiles__png,
-			flags: level.get_tile_layer('tiles').tileFlags2D,
-		});
-		tile_layer.add(tiles);
+		var level = OgmoUtils.parse_level_json(Assets.getText(Data.stage__json)).get_tile_layer('tiles');
+		tile_layer.add(new Tilemap({ data: level.data2D, tile_width: 16, tile_height: 16, tiles: Images.tiles__png, flags: level.tileFlags2D }));
 
 		new Gadget((GRID_WIDTH/2).floor() - 1, (GRID_HEIGHT/2).floor(), TELEPORTER);
 		new Gadget((GRID_WIDTH/2).floor() - 1, (GRID_HEIGHT/2).floor() - 1, RADAR);
 		new Gadget((GRID_WIDTH/2).floor(), (GRID_HEIGHT/2).floor() - 1, CARD_MACHINE);
-		new Turret((GRID_WIDTH/2).floor(), (GRID_HEIGHT/2).floor());
-
-		for (i in 0...3) new FlxTimer().start(i * 0.1).onComplete = t -> new objects.Card();
-
-		new FlxTimer().start(10).onComplete = t -> MONSTERS.spawn();
+		Gadget.get(CARD_MACHINE).util = 99;
+		new objects.Card(TURRET);
 	}
 
 	override function update(e:Float) {
@@ -138,9 +139,22 @@ class PlayState extends State
 			p.kill();
 			m.hurt(p.power);
 		});
+		if (flash_layer.alpha > 0) flash_layer.color = [0xfffeb854, 0xffe8ea4a, 0xff58f5b1, 0xffcc68e4, 0xfffe626e].get_random();
 	}
 
 	public function px_to_gx(v:Float) return ((v - GRID_OFFSET_X)/GRID_SIZE).floor();
 	public function py_to_gy(v:Float) return ((v - GRID_OFFSET_Y)/GRID_SIZE).floor();
+
+	public function hitstop(ms:Int) {
+		Timer.delay(() -> {
+			FlxG.timeScale = 0;
+			Timer.delay(() -> FlxG.timeScale = 1, ms);
+		}, 17);
+	}
+
+	public function flash(t:Float, a:Float) {
+		flash_layer.alpha = a;
+		FlxTween.tween(flash_layer, { alpha: 0 }, t);
+	}
 
 }

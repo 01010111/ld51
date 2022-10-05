@@ -51,7 +51,7 @@ class Meteor extends FlxSprite {
 		for (monster in MONSTERS.get_monsters_in_range(x, y, 24)) monster.kill();
 		new Gold(x - 6, y - 6);
 		super.kill();
-		FlxG.camera.flash(0xD0FFFFFF, 0.1);
+		PLAYSTATE.flash(0.2, 0.8);
 		FlxG.camera.shake(0.02, 0.5);
 	}
 

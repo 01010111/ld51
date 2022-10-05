@@ -27,7 +27,7 @@ class Gold extends FlxSprite {
 		for (i in 0...3) PLAYSTATE.nuggets.fire({ position: FlxPoint.get(x + 6, y + 6), util_amount: 360/3 * i + 45.get_random(-45) });
 		PLAYSTATE.stars.fire({ position: FlxPoint.get(x + 6, y + 6) });
 		FlxTween.cubicMotion(this, x, y, x, y - 80, Gadget.get(TELEPORTER).mx-4, Gadget.get(TELEPORTER).my-80, Gadget.get(TELEPORTER).mx-4, Gadget.get(TELEPORTER).my-4, 0.75).onComplete = t -> {
-			PLAYSTATE.stars.fire({ position: FlxPoint.get(Gadget.get(TELEPORTER).mx, Gadget.get(TELEPORTER).my - 2), velocity: FlxPoint.get(0, -10) });
+			PLAYSTATE.stars.fire({ position: FlxPoint.get(Gadget.get(TELEPORTER).mx, Gadget.get(TELEPORTER).my), velocity: FlxPoint.get(0, -10) });
 			if (Gadget.get(TELEPORTER).alive) Gadget.get(TELEPORTER).util++;
 			kill();
 		};

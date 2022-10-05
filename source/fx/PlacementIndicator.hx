@@ -1,5 +1,6 @@
 package fx;
 
+import util.CardManager.Card;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 
@@ -34,9 +35,15 @@ class PlacementIndicator extends FlxGroup {
 		visible = false;
 	}
 
-	public function revise(x:Int, y:Int, r:Int, a:Bool = true) {
-		if (a) {
-			a = CONSTRUCTION_MNGR.can_place(x, y);
+	public function revise(x:Int, y:Int, r:Int, card:Card) {
+		var c = CONSTRUCTION_MNGR.get_obj_at_coord(x, y);
+		var a = switch card {
+			case WALL, TURRET, PROXY: CONSTRUCTION_MNGR.can_place(x, y);
+			case RATE_UP: c != null && c.rate < c.max_rate;
+			case RANGE_UP: c != null && c.range < c.max_range;
+			case POWER_UP: c != null && c.power < c.max_power;
+			case BOOBYTRAP: c != null;
+			case SHIELD: c != null;
 		}
 
 		circle.visible = a && r > 0;

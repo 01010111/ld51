@@ -1,5 +1,6 @@
 package util;
 
+import objects.Bombo;
 import objects.BigSlime;
 import zero.utilities.Vec2;
 import flixel.util.FlxTimer;
@@ -8,15 +9,22 @@ import objects.Monster;
 
 class MonsterManager {
 	
-	var budget:Int = 1;
+	var budget:Int = 20;
 	var monsters:Array<Monster> = [];
 	var waves:Int = 0;
+	var begun:Bool = false;
 
 	public var all(get, never):Array<Monster>;
 	function get_all() return monsters;
 
 	public function new() {
 		monster_pile.shuffle();
+	}
+
+	public function begin () {
+		if (begun) return;
+		begun = true;
+		new FlxTimer().start(3).onComplete = t -> spawn();
 	}
 
 	public function spawn() {
@@ -96,6 +104,7 @@ class MonsterManager {
 enum abstract MonsterType(Class<Monster>) {
 	var GREMLIN = Gremlin;
 	var SLIME = BigSlime;
+	var BOMBO = Bombo;
 }
 
 private var monster_pile = [
@@ -113,9 +122,22 @@ private var monster_pile = [
 	SLIME,
 	SLIME,
 	SLIME,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
+	BOMBO,
 ];
 
 private var monster_cost:Map<String, Int> = [
 	GREMLIN.string() => 1,
 	SLIME.string() => 4,
+	BOMBO.string() => 12,
 ];

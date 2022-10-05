@@ -9,9 +9,14 @@ class MeteorManager {
 	
 	var tx:Int;
 	var ty:Int;
+	var do_continue:Bool = false;
+	var count:Int = 0;
 
 	public function new() {
-		new FlxTimer().start(3).onComplete = t -> fire();
+		new FlxTimer().start(3).onComplete = t -> {
+			fire();
+			new FlxTimer().start(10, t -> fire(), 2);
+		}
 	}
 
 	function adjust() {
@@ -28,7 +33,14 @@ class MeteorManager {
 		if (tx == (GRID_WIDTH/2).floor() && ty == (GRID_HEIGHT/2).floor()) Math.random() > 0.5 ? tx++ : ty++;
 	}
 
+	public function continue_firing() {
+		if (do_continue) return;
+		do_continue = true;
+		new FlxTimer().start(2).onComplete = t -> fire();
+	}
+
 	function fire() {
+		count++;
 		tx = GRID_WIDTH.get_random().floor();
 		ty = GRID_HEIGHT.get_random().floor();	
 		adjust();
@@ -52,7 +64,7 @@ class MeteorManager {
 				}
 			}
 		}
-		new FlxTimer().start(11.get_random_gaussian(9), t -> fire());
+		if (do_continue) new FlxTimer().start(11.get_random_gaussian(9), t -> fire());
 	}
 
 	function warn(r:Int,x:Int,y:Int) {

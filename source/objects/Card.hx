@@ -12,10 +12,10 @@ class Card extends FlxSprite {
 
 	public var card_type:util.CardManager.Card;
 
-	public function new() {
+	public function new(?type:util.CardManager.Card) {
 		super(FlxG.width/2, FlxG.height);
 		loadGraphic(Images.cards__png, true, 48, 64);
-		card_type = CARDS.next();
+		card_type = type != null ? type : CARDS.next();
 		animation.frameIndex = cast card_type;
 		CARDS.add(this);
 		FlxMouseEvent.add(this, c -> pickup());
@@ -35,7 +35,13 @@ class Card extends FlxSprite {
 					FlxG.mouse.y.snap_to_grid(16, 0, true) + 8 - 96
 				);
 				PLAYSTATE.placement_indicator.show();
-				PLAYSTATE.placement_indicator.revise(PLAYSTATE.px_to_gx(FlxG.mouse.x), PLAYSTATE.py_to_gy(FlxG.mouse.y), CARDS.get_indicator_radius(card_type));
+				var mx = PLAYSTATE.px_to_gx(FlxG.mouse.x);
+				var my = PLAYSTATE.py_to_gy(FlxG.mouse.y);
+				PLAYSTATE.placement_indicator.revise(
+					mx, my, 
+					CARDS.get_indicator_radius(card_type, CONSTRUCTION_MNGR.get_obj_at_coord(mx, my)),
+					card_type
+				);
 			}
 			else {
 				target.set(FlxG.mouse.x - 24, FlxG.mouse.y - 48);
@@ -58,6 +64,7 @@ class Card extends FlxSprite {
 	}
 
 	function attempt_placement() {
+		var c = CONSTRUCTION_MNGR.get_obj_at_coord(PLAYSTATE.px_to_gx(FlxG.mouse.x), PLAYSTATE.py_to_gy(FlxG.mouse.y));
 		switch card_type {
 			case WALL:
 				if (CONSTRUCTION_MNGR.can_place(PLAYSTATE.px_to_gx(FlxG.mouse.x), PLAYSTATE.py_to_gy(FlxG.mouse.y))) {
@@ -71,8 +78,23 @@ class Card extends FlxSprite {
 				}
 			case PROXY:
 			case RATE_UP:
+				if (c != null && c.rate < c.max_rate) {
+					c.rate++;
+					PLAYSTATE.stars.fire({ position: c.getMidpoint() });
+					kill();
+				}
 			case RANGE_UP:
+				if (c != null && c.range < c.max_range) {
+					c.range++;
+					PLAYSTATE.stars.fire({ position: c.getMidpoint() });
+					kill();
+				}
 			case POWER_UP:
+				if (c != null && c.power < c.max_power) {
+					c.power++;
+					PLAYSTATE.stars.fire({ position: c.getMidpoint() });
+					kill();
+				}
 			case BOOBYTRAP:
 			case SHIELD:
 		}

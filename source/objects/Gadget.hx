@@ -82,6 +82,8 @@ class Gadget extends Construction {
 	}
 
 	function teleport() {
+		MONSTERS.begin();
+		METEORS.continue_firing();
 		available = false;
 		for (i in 0...16) {
 			new FlxTimer().start(i * 0.1).onComplete = t -> PLAYSTATE.stars.fire({ position: FlxPoint.get(mx, my - 4 - i * 16) });

@@ -17,7 +17,6 @@ class ConstructionManager {
 
 	var temp_map:Array<Array<Int>> = [for (j in 0...(FlxG.height/GRID_SIZE).floor()) [for (i in 0...(FlxG.width/GRID_SIZE).floor()) 0]];
 	public function path(wx_s:Int, wy_s:Int, wx_e:Int, wy_e:Int, ?ex:Int, ?ey:Int) {
-		trace('path', wx_s, wy_s, wx_e, wy_e);
 		for (j in 0...vacancies.length) for (i in 0...vacancies[0].length) temp_map[j + (GRID_OFFSET_Y/16).floor()][i + (GRID_OFFSET_X/16).floor()] = vacancies[j][i];
 		if (ex != null && ey != null) temp_map[ey + (GRID_OFFSET_Y/16).floor()][ex + (GRID_OFFSET_X/16).floor()] = 1;
 		var path = temp_map.get_path({
@@ -38,7 +37,6 @@ class ConstructionManager {
 			Gadget.get(TELEPORTER).wy,
 			x, y
 		).length > 0;
-		trace('can place', _is_vacant, _can_path);
 		if (!_can_path) return false;
 		
 		return true;
@@ -70,7 +68,6 @@ class ConstructionManager {
 		if (!is_vacant(x, y)) return false;
 		objects_by_id.set(get_id(x, y), object);
 		if (mass) vacancies[y][x] = 1;
-		trace(vacancies);
 		return true;
 	}
 

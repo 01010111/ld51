@@ -33,9 +33,9 @@ class CardManager {
 			case WALL:0;
 			case TURRET:2;
 			case PROXY:1;
-			case RATE_UP:c.rate + 1;
-			case RANGE_UP:c.range + 1;
-			case POWER_UP:c.power + 1;
+			case RATE_UP:0;
+			case RANGE_UP:c == null ? 0 : c.range + 1;
+			case POWER_UP:0;
 			case BOOBYTRAP:0;
 			case SHIELD:0;
 		}
