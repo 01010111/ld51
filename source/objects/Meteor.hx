@@ -48,10 +48,8 @@ class Meteor extends FlxSprite {
 		}
 		PLAYSTATE.explosions.fire({ position: FlxPoint.get(x,y) });
 		new Decal(CRATER, x, y);
-		for (monster in MONSTERS.get_monsters_in_range(x, y, 16)) {
-			monster.hurt(8);
-		}
-		new Gold(x - 4, y - 4);
+		for (monster in MONSTERS.get_monsters_in_range(x, y, 24)) monster.kill();
+		new Gold(x - 6, y - 6);
 		super.kill();
 		FlxG.camera.flash(0xD0FFFFFF, 0.1);
 		FlxG.camera.shake(0.02, 0.5);

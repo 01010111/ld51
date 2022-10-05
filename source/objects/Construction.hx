@@ -26,6 +26,8 @@ class Construction extends GameObject {
 			y: GRID_OFFSET_Y + y * GRID_SIZE,
 		});
 		CONSTRUCTION_MNGR.add(this, x, y, mass);
+		MONSTERS.refresh();
+		if (mass) PLAYSTATE.poofs.fire({position: FlxPoint.get(x * 16 + GRID_OFFSET_X + 8, y * 16 + GRID_OFFSET_Y + 8)});
 	}
 
 	override function kill() {

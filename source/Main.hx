@@ -21,6 +21,7 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
+		stage.opaqueBackground = 0x8a6042;
 		addChild(new FlxGame(WIDTH, HEIGHT, states.PlayState, 60, 60, true));
 		((?dt:Dynamic) -> {
 			Timer.update(dt);

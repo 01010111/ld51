@@ -1,5 +1,8 @@
 package states;
 
+import fx.Nugget;
+import fx.Beam;
+import fx.Star;
 import fx.PlacementIndicator;
 import zero.utilities.IntPoint;
 import flixel.math.FlxRect;
@@ -52,6 +55,9 @@ class PlayState extends State
 	public var dust:ParticleEmitter;
 	public var explosions:ParticleEmitter;
 	public var warn_ind:ParticleEmitter;
+	public var stars:ParticleEmitter;
+	public var beams:ParticleEmitter;
+	public var nuggets:ParticleEmitter;
 
 	// logical layers
 	public var projectiles:FlxTypedGroup<Projectile> = new FlxTypedGroup();
@@ -79,6 +85,7 @@ class PlayState extends State
 		add(bg_ui_layer = new FlxGroup());
 		add(dust = new ParticleEmitter(() -> new Dust()));
 		add(object_layer = new FlxTypedGroup());
+		add(nuggets = new ParticleEmitter(() -> new Nugget()));
 		add(bullets = new ParticleEmitter(() -> new Bullet()));
 		add(sparks = new ParticleEmitter(() -> new Spark()));
 		add(poofs = new ParticleEmitter(() -> new Poof()));
@@ -87,6 +94,8 @@ class PlayState extends State
 		add(explosions = new ParticleEmitter(() -> new Explosion()));
 		add(warn_ind = new ParticleEmitter(() -> new WarningIndicator()));
 		add(placement_indicator = new PlacementIndicator());
+		add(stars = new ParticleEmitter(() -> new Star()));
+		add(beams = new ParticleEmitter(() -> new Beam()));
 		add(fg_ui_layer = new FlxGroup());
 	}
 	
@@ -115,11 +124,9 @@ class PlayState extends State
 		new Gadget((GRID_WIDTH/2).floor(), (GRID_HEIGHT/2).floor() - 1, CARD_MACHINE);
 		new Turret((GRID_WIDTH/2).floor(), (GRID_HEIGHT/2).floor());
 
-		new objects.Card();
-		new objects.Card();
-		new objects.Card();
+		for (i in 0...3) new FlxTimer().start(i * 0.1).onComplete = t -> new objects.Card();
 
-		MONSTERS.spawn();
+		new FlxTimer().start(10).onComplete = t -> MONSTERS.spawn();
 	}
 
 	override function update(e:Float) {

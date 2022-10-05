@@ -1,5 +1,6 @@
 package util;
 
+import objects.BigSlime;
 import zero.utilities.Vec2;
 import flixel.util.FlxTimer;
 import objects.Gremlin;
@@ -14,7 +15,9 @@ class MonsterManager {
 	public var all(get, never):Array<Monster>;
 	function get_all() return monsters;
 
-	public function new() {}
+	public function new() {
+		monster_pile.shuffle();
+	}
 
 	public function spawn() {
 		get_monsters();
@@ -84,10 +87,15 @@ class MonsterManager {
 		monsters.remove(monster);
 	}
 
+	public function refresh() {
+		for (monster in monsters) if (monster.alive && monster.walking) monster.get_path();
+	}
+
 }
 
 enum abstract MonsterType(Class<Monster>) {
 	var GREMLIN = Gremlin;
+	var SLIME = BigSlime;
 }
 
 private var monster_pile = [
@@ -101,8 +109,13 @@ private var monster_pile = [
 	GREMLIN,
 	GREMLIN,
 	GREMLIN,
+	SLIME,
+	SLIME,
+	SLIME,
+	SLIME,
 ];
 
 private var monster_cost:Map<String, Int> = [
 	GREMLIN.string() => 1,
+	SLIME.string() => 4,
 ];

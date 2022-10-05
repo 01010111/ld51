@@ -8,7 +8,7 @@
 
 	<!-- ____________________________ Window Settings ___________________________ -->
 
-	<window width="512" height="288" fps="60" background="#000000" hardware="true" vsync="false" />
+	<window width="512" height="288" fps="60" background="#8a6042" hardware="true" vsync="false" />
 	<window if="html5" resizable="false" />
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="false" />
 =	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" />

@@ -68,7 +68,7 @@ class Turret extends Construction {
 		bpo.put();
 		PLAYSTATE.bullets.fire({
 			position:FlxPoint.get(bp.x, bp.y),
-			velocity: aim_rot.vector_from_angle(120).to_flxpoint(),
+			velocity: aim_rot.vector_from_angle(160).to_flxpoint(),
 			data: { power: power },
 		});
 	}

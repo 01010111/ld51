@@ -11,8 +11,17 @@ class Monster extends GameObject {
 	function get_target() return target == null || !target.alive ? target = Gadget.gadgets.get_random() : target;
 	var speed:Float = 0;
 
+	public var walking:Bool = false;
+
 	public function new(side:EntrySide, y:Float) {
 		super();
+		MONSTERS.add(this);
+		PLAYSTATE.monsters.add(this);
+		drag.set(500, 500);
+		start(side, y);
+	}
+
+	function start(side:EntrySide, y:Float) {
 		var _x = switch side {
 			case LEFT:-64;
 			case RIGHT:FlxG.width + 64;
@@ -28,13 +37,12 @@ class Monster extends GameObject {
 				new FlxTimer().start(3, t -> get_path());
 			}
 		});
-		MONSTERS.add(this);
-		PLAYSTATE.monsters.add(this);
-		drag.set(500, 500);
 	}
 
 	public function get_path() {
+		walking = true;
 		var nodes = CONSTRUCTION_MNGR.path(wx, wy, target.wx, target.wy);
+		if (path == null) path = new FlxPath();
 		if (path.active) path.cancel();
 		path.start([for (node in nodes) FlxPoint.get(node.x * GRID_SIZE + GRID_SIZE/2, node.y * GRID_SIZE + GRID_SIZE/2)], speed).onComplete = p -> {};
 	}
