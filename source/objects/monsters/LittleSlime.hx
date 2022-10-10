@@ -1,6 +1,6 @@
-package objects;
+package objects.monsters;
 
-import objects.Monster.EntrySide;
+import objects.monsters.Monster.EntrySide;
 import flixel.util.FlxTimer;
 
 class LittleSlime extends Monster {
@@ -8,8 +8,8 @@ class LittleSlime extends Monster {
 	public function new(x, y) {
 		super(LEFT, y);
 		loadGraphic(Images.little_slime__png, true, 16, 32);
-		setSize(6, 6);
-		offset.set(5, 21);
+		setSize(8,8);
+		offset.set(4, 20);
 		this.set_facing_flip_horizontal();
 		animation.add('walk', [0,1], 12);
 		animation.add('attack', [0,1,2,3,4,5,6], 20);
@@ -21,6 +21,8 @@ class LittleSlime extends Monster {
 
 		speed = 40;
 		health = 8;
+		hit_frame = 6;
+		power = 1;
 	}
 
 	override function start(side:EntrySide, y:Float) {}

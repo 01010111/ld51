@@ -1,4 +1,4 @@
-package objects;
+package objects.constructions;
 
 class Wall extends Construction {
 
@@ -6,12 +6,10 @@ class Wall extends Construction {
 		super(x, y);
 
 		loadGraphic(Images.fences__png, true, 16, 32);
-		//this.make_anchored_hitbox(16, 16);
 		animation.callback = anim_callback;
 
 		WALL_MNGR.add(this, x, y);
 		PLAYSTATE.walls.add(this);
-
 	}
 
 	function anim_callback(n:String, i:Int, f:Int) {

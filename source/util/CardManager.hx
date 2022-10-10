@@ -1,10 +1,10 @@
 package util;
 
-import objects.Construction;
+import objects.constructions.Construction;
 
 class CardManager {
 
-	var deck:Array<Card>;
+	public var deck:Array<Card>;
 
 	public function load_deck(arr:Array<Card>) deck = arr;
 	public function shuffle() deck.shuffle();
@@ -14,30 +14,60 @@ class CardManager {
 	}
 
 	public function new() {
-		load_deck([WALL, WALL, WALL, TURRET, TURRET, TURRET, RATE_UP, RANGE_UP, POWER_UP]);
+		load_deck([
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			WALL,
+			TURRET,
+			TURRET,
+			TURRET,
+			TURRET,
+			TURRET,
+			TURRET,
+			TURRET,
+			TURRET,
+			PROXY,
+			PROXY,
+			DIGGER,
+			TIME_DILATOR,
+			RATE_UP,
+			RATE_UP,
+			RATE_UP,
+			RANGE_UP,
+			RANGE_UP,
+			RANGE_UP,
+			POWER_UP,
+			POWER_UP,
+			POWER_UP,
+		]);
 		shuffle();
 	}
 
-	public var hand:Array<objects.Card> = [];
+	public var hand:Array<ui.Card> = [];
 
-	public function add(card:objects.Card) {
+	public function add(card:ui.Card) {
 		hand.push(card);
 	}
 
-	public function remove(card:objects.Card) {
+	public function remove(card:ui.Card) {
 		hand.remove(card);
 	}
 
 	public function get_indicator_radius(card:Card, ?c:Construction) {
 		return switch card {
-			case WALL:0;
 			case TURRET:2;
 			case PROXY:1;
-			case RATE_UP:0;
 			case RANGE_UP:c == null ? 0 : c.range + 1;
-			case POWER_UP:0;
-			case BOOBYTRAP:0;
-			case SHIELD:0;
+			default: 0;
 		}
 	}
 
@@ -47,9 +77,11 @@ enum abstract Card(Int) {
 	var WALL = 0;
 	var TURRET = 1;
 	var PROXY = 2;
-	var RATE_UP = 3;
-	var RANGE_UP = 4;
-	var POWER_UP = 5;
-	var BOOBYTRAP = 6;
-	var SHIELD = 7;
+	var DIGGER = 3;
+	var TIME_DILATOR = 4;
+	var RATE_UP = 10;
+	var RANGE_UP = 11;
+	var POWER_UP = 12;
+	var BOOBYTRAP = 13;
+	var SHIELD = 14;
 }

@@ -1,4 +1,4 @@
-package objects;
+package objects.monsters;
 
 import zero.utilities.IntPoint;
 import flixel.util.FlxTimer;
@@ -8,14 +8,16 @@ class BigSlime extends Monster {
 	public function new(side, y) {
 		super(side, y);
 		loadGraphic(Images.big_slime__png, true, 16, 32);
-		setSize(6, 6);
-		offset.set(5, 21);
+		setSize(8,8);
+		offset.set(4, 20);
 		this.set_facing_flip_horizontal();
 		animation.add('walk', [0,1,2,1], 12);
 		animation.add('attack', [3,4,5,6,7,6,5,4], 20);
 
 		speed = 40;
 		health = 12;
+		hit_frame = 6;
+		power = 3;
 	}
 
 	override function update(dt:Float) {

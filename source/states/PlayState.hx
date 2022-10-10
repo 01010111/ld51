@@ -1,40 +1,28 @@
 package states;
 
-import flixel.tweens.FlxTween;
-import flixel.FlxSprite;
-import fx.Spotlight;
-import haxe.Timer;
-import fx.Nugget;
-import fx.Beam;
-import fx.Star;
-import fx.PlacementIndicator;
-import zero.utilities.IntPoint;
-import flixel.math.FlxRect;
-import util.CardManager;
-import flixel.input.mouse.FlxMouseEventManager;
-import fx.WarningIndicator;
-import util.MeteorManager;
-import fx.Explosion;
-import fx.Dust;
-import objects.Meteor;
+import ui.GoldCount;
 import flixel.util.FlxTimer;
-import fx.MeteorTrail;
-import fx.Spark;
-import fx.Poof;
-import objects.Projectile;
-import objects.Bullet;
-import zero.flixel.ec.ParticleEmitter;
-import util.MonsterManager;
-import objects.Gadget;
-import objects.Turret;
-import fx.Decal;
-import objects.Wall;
-import objects.Tilemap;
-import openfl.Assets;
-import util.WallManager;
-import util.ConstructionManager;
-import objects.GameObject;
+import objects.Gold;
+import haxe.Timer;
+import flixel.FlxSprite;
 import flixel.group.FlxGroup;
+import flixel.math.FlxRect;
+import flixel.tweens.FlxTween;
+import flixel.input.mouse.FlxMouseEventManager;
+import fx.*;
+import objects.Bullet;
+import objects.GameObject;
+import objects.Projectile;
+import objects.Tilemap;
+import objects.constructions.Gadget;
+import openfl.Assets;
+import ui.Meters;
+import util.CardManager;
+import util.ConstructionManager;
+import util.MeteorManager;
+import util.MonsterManager;
+import util.WallManager;
+import zero.flixel.ec.ParticleEmitter;
 import zero.flixel.states.State;
 
 using zero.utilities.OgmoUtils;
@@ -69,19 +57,25 @@ class PlayState extends State
 	public var projectiles:FlxTypedGroup<Projectile> = new FlxTypedGroup();
 	public var monsters:FlxGroup = new FlxGroup();
 	public var walls:FlxGroup = new FlxGroup();
+	public var gold:FlxTypedGroup<Gold> = new FlxTypedGroup();
 
 	// game stuff 
-	public var score:Int = 0;
+	public var score(default, set):Int = 0;
 	public var field:FlxRect = FlxRect.get(GRID_OFFSET_X, GRID_OFFSET_Y, GRID_WIDTH * GRID_SIZE, GRID_HEIGHT * GRID_SIZE);
 	public var placement_indicator:PlacementIndicator;
+	public var meters:Meters;
+	public var timescale:Float = 1;
+	public var hit_stop:Bool = false;
 
 	override function create() {
+		bgColor = 0xFF8a6042;
 		FlxG.plugins.add(new FlxMouseEventManager());
 		FlxG.mouse.useSystemCursor = true;
 		PLAYSTATE = this;
 		add_layers();
 		init_managers();
 		init_stage();
+		FlxG.camera.fade(0xFF000000, 1, true);
 	}
 
 	function add_layers() {
@@ -120,18 +114,24 @@ class PlayState extends State
 	}
 
 	function init_stage() {
+		meters = new Meters();
+		GOLD_COUNT = new GoldCount();
+
 		var level = OgmoUtils.parse_level_json(Assets.getText(Data.stage__json)).get_tile_layer('tiles');
 		tile_layer.add(new Tilemap({ data: level.data2D, tile_width: 16, tile_height: 16, tiles: Images.tiles__png, flags: level.tileFlags2D }));
 
 		new Gadget((GRID_WIDTH/2).floor() - 1, (GRID_HEIGHT/2).floor(), TELEPORTER);
 		new Gadget((GRID_WIDTH/2).floor() - 1, (GRID_HEIGHT/2).floor() - 1, RADAR);
 		new Gadget((GRID_WIDTH/2).floor(), (GRID_HEIGHT/2).floor() - 1, CARD_MACHINE);
-		Gadget.get(CARD_MACHINE).util = 99;
-		new objects.Card(TURRET);
+		
+		new FlxTimer().start(2).onComplete = t -> {
+			new ui.Card(TURRET);
+			new ui.Card(TIME_DILATOR);
+		}
 	}
 
 	override function update(e:Float) {
-		super.update(e);
+		super.update(e * timescale);
 		object_layer.sort((i,o1,o2) -> o1.my < o2.my ? -1 : 1);
 		FlxG.collide(monsters,monsters);
 		FlxG.overlap(walls, projectiles, (w, p) -> p.kill());
@@ -140,6 +140,7 @@ class PlayState extends State
 			m.hurt(p.power);
 		});
 		if (flash_layer.alpha > 0) flash_layer.color = [0xfffeb854, 0xffe8ea4a, 0xff58f5b1, 0xffcc68e4, 0xfffe626e].get_random();
+		FlxG.timeScale = hit_stop ? 0 : timescale;
 	}
 
 	public function px_to_gx(v:Float) return ((v - GRID_OFFSET_X)/GRID_SIZE).floor();
@@ -147,14 +148,19 @@ class PlayState extends State
 
 	public function hitstop(ms:Int) {
 		Timer.delay(() -> {
-			FlxG.timeScale = 0;
-			Timer.delay(() -> FlxG.timeScale = 1, ms);
+			hit_stop = true;
+			Timer.delay(() -> hit_stop = false, ms);
 		}, 17);
 	}
 
 	public function flash(t:Float, a:Float) {
 		flash_layer.alpha = a;
 		FlxTween.tween(flash_layer, { alpha: 0 }, t);
+	}
+
+	function set_score(v:Int) {
+		GOLD_COUNT.amt = v;
+		return score = v;
 	}
 
 }

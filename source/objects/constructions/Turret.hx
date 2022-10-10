@@ -1,4 +1,4 @@
-package objects;
+package objects.constructions;
 
 import zero.utilities.Vec2;
 
@@ -60,7 +60,7 @@ class Turret extends Construction {
 	}
 
 	function fire() {
-		FlxG.camera.shake(0.002, 0.1);
+		FlxG.camera.shake(0.001, 0.1);
 		var bp = Vec2.get(mx, my);
 		var bpo = Vec2.get(4, 0);
 		bpo.angle = aim_rot;

@@ -1,8 +1,9 @@
-package objects;
+package objects.constructions;
 
 import fx.Decal;
 import flixel.util.FlxTimer;
 import zero.utilities.Vec2;
+import objects.monsters.Monster;
 
 class Construction extends GameObject {
 
@@ -25,9 +26,14 @@ class Construction extends GameObject {
 			x: GRID_OFFSET_X + x * GRID_SIZE,
 			y: GRID_OFFSET_Y + y * GRID_SIZE,
 		});
-		CONSTRUCTION_MNGR.add(this, x, y, mass);
+		CONSTRUCTION_MNGR.add(this, x, y, mass, this is Gadget);
 		MONSTERS.refresh();
-		if (mass) PLAYSTATE.poofs.fire({position: FlxPoint.get(x * 16 + GRID_OFFSET_X + 8, y * 16 + GRID_OFFSET_Y + 8)});
+		if (mass) {
+			PLAYSTATE.beams.fire({position: FlxPoint.get(x * 16 + GRID_OFFSET_X + 8, y * 16 + GRID_OFFSET_Y + 8)});
+			PLAYSTATE.stars.fire({position: FlxPoint.get(x * 16 + GRID_OFFSET_X + 8, y * 16 + GRID_OFFSET_Y + 8)});
+			PLAYSTATE.poofs.fire({position: FlxPoint.get(x * 16 + GRID_OFFSET_X + 8, y * 16 + GRID_OFFSET_Y + 8)});
+		}
+		new FlxTimer().start(0.02).onComplete = t -> FlxG.overlap(this, PLAYSTATE.gold, (c,g) -> g.get());
 	}
 
 	override function kill() {

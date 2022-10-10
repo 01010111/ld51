@@ -1,15 +1,24 @@
-package objects;
+package objects.monsters;
 
+import zero.utilities.IntPoint;
 import fx.Decal;
 import util.ConstructionManager;
 import flixel.path.FlxPath;
 import flixel.util.FlxTimer;
+import objects.constructions.Gadget;
 
 class Monster extends GameObject {
 
 	var target(get, default):Gadget;
-	function get_target() return target == null || !target.alive ? target = Gadget.gadgets.get_random() : target;
+	function get_target() {
+		if (target != null && target.alive) return target;
+		Gadget.gadgets.shuffle();
+		for (g in Gadget.gadgets) if (g.alive) return target = g;
+		return null;
+	}
 	var speed:Float = 0;
+	var power:Int = 0;
+	var hit_frame:Int = -1;
 
 	public var walking:Bool = false;
 
@@ -19,6 +28,18 @@ class Monster extends GameObject {
 		PLAYSTATE.monsters.add(this);
 		drag.set(500, 500);
 		start(side, y);
+		animation.callback = anim_callback;
+		elasticity = 1;
+	}
+
+	function anim_callback(s:String, i:Int, f:Int) {
+		if (f == hit_frame) {
+			var c = Gadget.get_nearest(mx, my);
+			if (c == null) return;
+			if (c is Gadget) {
+				c.hurt(power);
+			}
+		}
 	}
 
 	function start(side:EntrySide, y:Float) {
@@ -41,7 +62,8 @@ class Monster extends GameObject {
 
 	public function get_path() {
 		walking = true;
-		var nodes = CONSTRUCTION_MNGR.path(wx, wy, target.wx, target.wy);
+		target = target;
+		var nodes = target == null ? [IntPoint.get(wx, wy)] : CONSTRUCTION_MNGR.path(wx, wy, target.wx, target.wy);
 		if (path == null) path = new FlxPath();
 		if (path.active) path.cancel();
 		path.start([for (node in nodes) FlxPoint.get(node.x * GRID_SIZE + GRID_SIZE/2, node.y * GRID_SIZE + GRID_SIZE/2)], speed).onComplete = p -> {};

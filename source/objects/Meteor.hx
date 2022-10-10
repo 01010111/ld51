@@ -7,6 +7,8 @@ import flixel.tweens.FlxTween;
 import flixel.FlxSprite;
 
 class Meteor extends FlxSprite {
+
+	var trail_timer:Float = 0;
 	
 	public function new(x1:Float, y1:Float, x2:Float, y2:Float, tx:Int, ty:Int) {
 		super(x1, y1, Images.meteor__png);
@@ -24,7 +26,10 @@ class Meteor extends FlxSprite {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
-		for (i in 0...3) fire_trail();
+		if ((trail_timer -= elapsed) <= 0) {
+			trail_timer = 0.02;
+			for (i in 0...3) fire_trail();
+		}
 	}
 
 	function fire_trail() {

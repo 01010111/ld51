@@ -1,6 +1,6 @@
 package util;
 
-import objects.Wall;
+import objects.constructions.Wall;
 
 class WallManager {
 	

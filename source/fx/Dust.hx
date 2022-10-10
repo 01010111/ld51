@@ -1,5 +1,7 @@
 package fx;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import zero.flixel.ec.ParticleEmitter.FireOptions;
 import zero.flixel.ec.components.KillAfterAnimation;
@@ -7,6 +9,10 @@ import zero.flixel.ec.ParticleEmitter.Particle;
 
 class Dust extends Particle {
 	
+	var vlen(get, set):Float;
+	function get_vlen() return velocity.length;
+	function set_vlen(v) return velocity.length = v;
+
 	public function new() {
 		super();
 		loadGraphic(Images.dust__png, true, 8, 8);
@@ -20,11 +26,7 @@ class Dust extends Particle {
 		super.fire(options);
 		animation.play('play');
 		new FlxTimer().start(0.6.get_random(0.5)).onComplete = t -> this.flicker(0.5, 0.04, true, true, f -> kill());
-	}
-
-	override function update(dt:Float) {
-		super.update(dt);
-		velocity.length *= 0.9;
+		FlxTween.tween(this, { vlen: 0 }, 1, { ease: FlxEase.quintOut });
 	}
 
 }

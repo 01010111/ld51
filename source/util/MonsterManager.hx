@@ -1,15 +1,14 @@
 package util;
 
-import objects.Bombo;
-import objects.BigSlime;
+import objects.monsters.Monster;
+import objects.constructions.Gadget;
+import objects.monsters.*;
 import zero.utilities.Vec2;
 import flixel.util.FlxTimer;
-import objects.Gremlin;
-import objects.Monster;
 
 class MonsterManager {
 	
-	var budget:Int = 20;
+	var budget:Int = 1;
 	var monsters:Array<Monster> = [];
 	var waves:Int = 0;
 	var begun:Bool = false;
@@ -28,11 +27,14 @@ class MonsterManager {
 	}
 
 	public function spawn() {
+		var r = true;
+		for (g in Gadget.gadgets) if (g.alive) r = false;
+		if (r) return;
 		get_monsters();
 		waves++;
 		if (waves % 2 == 0) budget++;
 
-		new FlxTimer().start(16, t -> spawn());
+		new FlxTimer().start(MONSTER_TIMER, t -> spawn());
 	}
 
 	function get_next_monster() {
@@ -122,14 +124,6 @@ private var monster_pile = [
 	SLIME,
 	SLIME,
 	SLIME,
-	BOMBO,
-	BOMBO,
-	BOMBO,
-	BOMBO,
-	BOMBO,
-	BOMBO,
-	BOMBO,
-	BOMBO,
 	BOMBO,
 	BOMBO,
 	BOMBO,

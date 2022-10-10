@@ -1,5 +1,6 @@
 package fx;
 
+import flixel.tweens.FlxTween;
 import zero.flixel.ec.ParticleEmitter.FireOptions;
 import zero.flixel.ec.components.KillAfterAnimation;
 import zero.flixel.ec.ParticleEmitter.Particle;
@@ -23,14 +24,13 @@ class MeteorTrail extends Particle {
 		angle = 4.get_random().floor() * 90;
 		animation.play('play');
 		scale.set(1,1);
+		FlxTween.tween(scale, { x: 4, y: 4 }, 1);
+		FlxTween.tween(this, { alpha: 0 }, 1);
 		alpha = 1;
 	}
 
 	override function update(dt:Float) {
 		super.update(dt);
-		scale.x *= 1.05.get_random(1);
-		scale.y *= 1.05.get_random(1);
-		alpha *= 0.99.get_random(0.95);
 	}
 
 }

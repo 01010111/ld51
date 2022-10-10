@@ -1,8 +1,7 @@
 package util;
 
-import objects.Gadget;
-import flixel.system.debug.watch.WatchEntry;
-import objects.Construction;
+import objects.constructions.Gadget;
+import objects.constructions.Construction;
 
 using zero.utilities.AStar;
 
@@ -11,9 +10,7 @@ class ConstructionManager {
 	var vacancies:Array<Array<Int>> = [for (j in 0...GRID_HEIGHT) [for (i in 0...GRID_WIDTH) 0]];
 	var objects_by_id:Map<Int,Construction> = [];
 
-	public function new() {
-		//for (j in 0...2) for (i in 0...2) vacancies[j + (GRID_HEIGHT/2).floor()][i + (GRID_WIDTH/2).floor()] = 1;
-	}
+	public function new() {}
 
 	var temp_map:Array<Array<Int>> = [for (j in 0...(FlxG.height/GRID_SIZE).floor()) [for (i in 0...(FlxG.width/GRID_SIZE).floor()) 0]];
 	public function path(wx_s:Int, wy_s:Int, wx_e:Int, wy_e:Int, ?ex:Int, ?ey:Int) {
@@ -64,8 +61,8 @@ class ConstructionManager {
 		return (id/1000).floor();
 	}
 
-	public function add(object:Construction, x:Int, y:Int, mass:Bool) {
-		if (!is_vacant(x, y)) return false;
+	public function add(object:Construction, x:Int, y:Int, mass:Bool, force:Bool = false) {
+		if (!is_vacant(x, y) && !force) return false;
 		objects_by_id.set(get_id(x, y), object);
 		if (mass) vacancies[y][x] = 1;
 		return true;

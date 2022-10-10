@@ -19,8 +19,9 @@ class PlacementIndicator extends FlxGroup {
 		add(placement);
 
 		circle = new FlxSprite();
-		circle.loadGraphic(Images.circles__png, true, 144, 144);
+		circle.loadGraphic(Images.circles__png, true, 144*4, 144*4);
 		circle.make_and_center_hitbox(0,0);
+		circle.scale.set(0.25, 0.25);
 		circle.blend = ADD;
 		add(circle);
 
@@ -38,7 +39,7 @@ class PlacementIndicator extends FlxGroup {
 	public function revise(x:Int, y:Int, r:Int, card:Card) {
 		var c = CONSTRUCTION_MNGR.get_obj_at_coord(x, y);
 		var a = switch card {
-			case WALL, TURRET, PROXY: CONSTRUCTION_MNGR.can_place(x, y);
+			case WALL, TURRET, PROXY, DIGGER, TIME_DILATOR: CONSTRUCTION_MNGR.can_place(x, y);
 			case RATE_UP: c != null && c.rate < c.max_rate;
 			case RANGE_UP: c != null && c.range < c.max_range;
 			case POWER_UP: c != null && c.power < c.max_power;

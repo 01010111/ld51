@@ -3,23 +3,25 @@ package objects;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.input.mouse.FlxMouseEvent;
-import objects.Gadget;
+import objects.constructions.Gadget;
 import flixel.FlxSprite;
 
-class Gold extends FlxSprite {
+class Gold extends GameObject {
 
 	var killed = false;
 
 	public function new(x:Float, y:Float) {
-		super(x, y);
+		super({ x: x, y: y });
 		loadGraphic(Images.gold__png, true, 12, 12);
 		animation.frameIndex = 0;
-		FlxMouseEvent.add(this, g -> send());
+		FlxMouseEvent.add(this, g -> get());
 		PLAYSTATE.bg_ui_layer.add(this);
+		PLAYSTATE.gold.add(this);
 	}
 	
-	function send() {
+	public function get() {
 		if (!Gadget.get(TELEPORTER).available) return;
+		if (!Gadget.get(TELEPORTER).alive) return;
 		if (killed) return;
 		animation.frameIndex = 1;
 		PLAYSTATE.add(this);

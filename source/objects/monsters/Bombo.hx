@@ -1,18 +1,19 @@
-package objects;
+package objects.monsters;
 
 import haxe.Timer;
 import zero.utilities.Vec2;
 import flixel.util.FlxTimer;
+import objects.constructions.Gadget;
 
 class Bombo extends Monster {
 
 	public function new(side, y) {
 		super(side, y);
 		loadGraphic(Images.bombo__png, true, 48, 48);
-		this.make_and_center_hitbox(6, 6);
+		this.make_and_center_hitbox(8,8);
 		this.set_facing_flip_horizontal();
 		animation.add('walk', [12,12,13,14,15,15,16,17], 8);
-		animation.add('attack', [0,1,2,3,4,5,6,7,8,9,10,11], 40);
+		animation.add('attack', [0,1,2,3,4,5,6,7,8,9,10,11], 24);
 
 		speed = 30;
 		health = 20;
@@ -31,7 +32,7 @@ class Bombo extends Monster {
 		dead = true;
 		PLAYSTATE.add(this);
 		PLAYSTATE.spotlights.fire({ position: getMidpoint().add(0, -4), util_amount: 0.01 });
-		PLAYSTATE.hitstop(500);
+		PLAYSTATE.hitstop(250);
 		new FlxTimer().start(0.01, t -> really_kill());
 	}
 
@@ -59,7 +60,7 @@ class Bombo extends Monster {
 		var i = 5;
 		for (bldg in bldgs) new FlxTimer().start(i * 0.1).onComplete = t -> {
 			if (bldg == null) return;
-			if (bldg is Gadget) bldg.hurt(8);
+			if (bldg is Gadget) bldg.hurt(20);
 			else bldg.kill();
 			i++;
 		}

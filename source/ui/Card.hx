@@ -1,24 +1,29 @@
-package objects;
+package ui;
 
 import util.CardManager;
 import flixel.input.mouse.FlxMouseEvent;
 import zero.utilities.Vec2;
 import flixel.FlxSprite;
+import objects.constructions.*;
 
 class Card extends FlxSprite {
 	
 	public var held:Bool = false;
+	public var mouseover:Bool = false;
 	public var target:Vec2 = Vec2.get();
 
 	public var card_type:util.CardManager.Card;
 
 	public function new(?type:util.CardManager.Card) {
-		super(FlxG.width/2, FlxG.height);
-		loadGraphic(Images.cards__png, true, 48, 64);
+		super(FlxG.width/2 - 24, FlxG.height);
+		loadGraphic(Images.cards__png, true, 48 * 4, 64 * 4);
+		setSize(48, 64);
+		origin.set(0,0);
+		scale.set(0.25, 0.25);
 		card_type = type != null ? type : CARDS.next();
 		animation.frameIndex = cast card_type;
 		CARDS.add(this);
-		FlxMouseEvent.add(this, c -> pickup());
+		FlxMouseEvent.add(this, c -> pickup(), null, c -> over(), c -> out());
 		PLAYSTATE.fg_ui_layer.add(this);
 	}
 
@@ -26,7 +31,7 @@ class Card extends FlxSprite {
 		super.update(elapsed);
 		if (!held) target.set(
 			FlxG.width/2 - CARDS.hand.length/2 * 56 + CARDS.hand.indexOf(this) * 56,
-			FlxG.height - 32
+			FlxG.height - (mouseover ? 48 : 32)
 		);
 		else {
 			if (PLAYSTATE.field.containsPoint(FlxG.mouse.getPosition())) {
@@ -55,6 +60,16 @@ class Card extends FlxSprite {
 
 	function pickup() {
 		held = true;
+		mouseover = false;
+	}
+
+	function over() {
+		for (c in CARDS.hand) c.mouseover = false;
+		mouseover = true;
+	}
+
+	function out() {
+		mouseover = false;
 	}
 
 	function drop() {
@@ -64,19 +79,36 @@ class Card extends FlxSprite {
 	}
 
 	function attempt_placement() {
-		var c = CONSTRUCTION_MNGR.get_obj_at_coord(PLAYSTATE.px_to_gx(FlxG.mouse.x), PLAYSTATE.py_to_gy(FlxG.mouse.y));
+		var x = PLAYSTATE.px_to_gx(FlxG.mouse.x);
+		var y = PLAYSTATE.py_to_gy(FlxG.mouse.y);
+		var c = CONSTRUCTION_MNGR.get_obj_at_coord(x, y);
+		var can_place = CONSTRUCTION_MNGR.can_place(x, y);
 		switch card_type {
 			case WALL:
-				if (CONSTRUCTION_MNGR.can_place(PLAYSTATE.px_to_gx(FlxG.mouse.x), PLAYSTATE.py_to_gy(FlxG.mouse.y))) {
-					new Wall(PLAYSTATE.px_to_gx(FlxG.mouse.x), PLAYSTATE.py_to_gy(FlxG.mouse.y));
+				if (can_place) {
+					new Wall(x, y);
 					kill();
 				}
 			case TURRET:
-				if (CONSTRUCTION_MNGR.can_place(PLAYSTATE.px_to_gx(FlxG.mouse.x), PLAYSTATE.py_to_gy(FlxG.mouse.y))) {
-					new Turret(PLAYSTATE.px_to_gx(FlxG.mouse.x), PLAYSTATE.py_to_gy(FlxG.mouse.y));
+				if (can_place) {
+					new Turret(x, y);
 					kill();
 				}
 			case PROXY:
+				if (can_place) {
+					new Proxy(x, y);
+					kill();
+				}
+			case DIGGER:
+				if (can_place) {
+					new Digger(x, y);
+					kill();
+				}
+			case TIME_DILATOR:
+				if (can_place) {
+					new TimeDilator(x, y);
+					kill();
+				}
 			case RATE_UP:
 				if (c != null && c.rate < c.max_rate) {
 					c.rate++;
