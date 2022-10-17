@@ -40,8 +40,8 @@ class Card extends FlxSprite {
 					FlxG.mouse.y.snap_to_grid(16, 0, true) + 8 - 96
 				);
 				PLAYSTATE.placement_indicator.show();
-				var mx = PLAYSTATE.px_to_gx(FlxG.mouse.x);
-				var my = PLAYSTATE.py_to_gy(FlxG.mouse.y);
+				var mx = FlxG.mouse.x.px_to_gx();
+				var my = FlxG.mouse.y.py_to_gy();
 				PLAYSTATE.placement_indicator.revise(
 					mx, my, 
 					CARDS.get_indicator_radius(card_type, CONSTRUCTION_MNGR.get_obj_at_coord(mx, my)),
@@ -79,8 +79,8 @@ class Card extends FlxSprite {
 	}
 
 	function attempt_placement() {
-		var x = PLAYSTATE.px_to_gx(FlxG.mouse.x);
-		var y = PLAYSTATE.py_to_gy(FlxG.mouse.y);
+		var x = FlxG.mouse.x.px_to_gx();
+		var y = FlxG.mouse.y.py_to_gy();
 		var c = CONSTRUCTION_MNGR.get_obj_at_coord(x, y);
 		var can_place = CONSTRUCTION_MNGR.can_place(x, y);
 		switch card_type {
@@ -109,6 +109,21 @@ class Card extends FlxSprite {
 					new TimeDilator(x, y);
 					kill();
 				}
+			case RADAR:
+				if (can_place) {
+					new Gadget(x, y, RADAR);
+					kill();
+				}
+			case CARD_BOX:
+				if (can_place) {
+					new Gadget(x, y, CARD_MACHINE);
+					kill();
+				}
+			case TELEPORTER:
+				if (can_place) {
+					new Gadget(x, y, TELEPORTER);
+					kill();
+				}								
 			case RATE_UP:
 				if (c != null && c.rate < c.max_rate) {
 					c.rate++;
@@ -128,6 +143,11 @@ class Card extends FlxSprite {
 					kill();
 				}
 			case BOOBYTRAP:
+				if (c != null && !c.boobytrapped) {
+					c.boobytrapped = true;
+					PLAYSTATE.stars.fire({ position: c.getMidpoint() });
+					kill();
+				}
 			case SHIELD:
 		}
 	}

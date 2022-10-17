@@ -159,6 +159,7 @@ class Grain extends FlxShader
 
 	public function update(?dt:Dynamic) {
 		t += dt;
+		t = t % 10;
 	}
 	
 }

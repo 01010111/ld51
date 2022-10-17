@@ -36,6 +36,9 @@ class Digger extends Construction {
 				do_give = false;
 				PLAYSTATE.object_layer.add(ref_gold = new Gold(mx - 6, my));
 				PLAYSTATE.stars.fire({ position: getMidpoint() });
+				var tele = Gadget.get(TELEPORTER);
+				var cons = CONSTRUCTION_MNGR.get_obj_at_coord(gx, gy + 1);
+				if (tele != null && tele == cons) ref_gold.get(20);
 			}
 		}
 	}

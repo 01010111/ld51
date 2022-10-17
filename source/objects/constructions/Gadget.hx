@@ -36,7 +36,7 @@ class Gadget extends Construction {
 	}
 
 	public function new(x:Int, y:Int, type:GadgetType) {
-		super(x, y, false);
+		super(x, y);
 		gadget_type = type;
 		gadget_map.set(type, this);
 		loadGraphic(Images.gadgets__png, true, 16, 32);
@@ -61,6 +61,7 @@ class Gadget extends Construction {
 		gadgets.push(this);
 		health = max_health;
 		util = 0;
+		if (CONSTRUCTION_MNGR.gadget_pos.length == 3) METEORS.start();
 	}
 
 	function set_util(v:Int) {
@@ -108,7 +109,7 @@ class Gadget extends Construction {
 			util = 0;
 			new FlxTimer().start(0.1, t -> PLAYSTATE.score++, 3);
 			PLAYSTATE.beams.fire({ position: FlxPoint.get(mx, my - 2) });
-			for (i in 1...4) new FlxTimer().start(i * 0.2).onComplete = t -> if (get(CARD_MACHINE).alive) get(CARD_MACHINE).util ++;
+			for (i in 1...4) new FlxTimer().start(i * 0.2).onComplete = t -> if (get(CARD_MACHINE) != null && get(CARD_MACHINE).alive) get(CARD_MACHINE).util ++;
 			available = true;
 		}
 	}

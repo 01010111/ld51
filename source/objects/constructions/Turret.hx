@@ -60,7 +60,7 @@ class Turret extends Construction {
 	}
 
 	function fire() {
-		FlxG.camera.shake(0.001, 0.1);
+		FlxG.camera.shake(0.001 * screenshake_amt, 0.1);
 		var bp = Vec2.get(mx, my);
 		var bpo = Vec2.get(4, 0);
 		bpo.angle = aim_rot;
@@ -68,7 +68,7 @@ class Turret extends Construction {
 		bpo.put();
 		PLAYSTATE.bullets.fire({
 			position:FlxPoint.get(bp.x, bp.y),
-			velocity: aim_rot.vector_from_angle(160).to_flxpoint(),
+			velocity: aim_rot.vector_from_angle(power.map(1, 3, 140, 200)).to_flxpoint(),
 			data: { power: power },
 		});
 	}

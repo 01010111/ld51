@@ -1,6 +1,7 @@
 package util;
 
 import ui.GoldCount;
+import ui.MonsterCount;
 import states.PlayState;
 
 var PLAYSTATE:PlayState;
@@ -10,6 +11,7 @@ var MONSTERS:MonsterManager;
 var METEORS:MeteorManager;
 var CARDS:CardManager;
 var GOLD_COUNT:GoldCount;
+var MONSTER_COUNT:MonsterCount;
 
 var GRID_OFFSET_X:Float = 112;
 var GRID_OFFSET_Y:Float = 32;

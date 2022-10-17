@@ -12,7 +12,9 @@ class MeteorManager {
 	var do_continue:Bool = false;
 	var count:Int = 0;
 
-	public function new() {
+	public function new() {}
+
+	public function start() {
 		new FlxTimer().start(3).onComplete = t -> {
 			fire();
 			new FlxTimer().start(10, t -> fire(), 2);
@@ -23,14 +25,23 @@ class MeteorManager {
 		Math.random() > 0.5 ? tx += [-1,-1,0,1,1].get_random() : ty += [-1,-1,0,1,1].get_random();
 		tx = tx.clamp(0, GRID_WIDTH - 1).floor();
 		ty = ty.clamp(0, GRID_HEIGHT - 1).floor();
-		check_center();
+		check_gadgets();
 	}
 
-	function check_center() {
-		if (tx == (GRID_WIDTH/2).floor() - 1 && ty == (GRID_HEIGHT/2).floor() - 1) Math.random() > 0.5 ? tx-- : ty--;
-		if (tx == (GRID_WIDTH/2).floor() && ty == (GRID_HEIGHT/2).floor() - 1) Math.random() > 0.5 ? tx++ : ty--;
-		if (tx == (GRID_WIDTH/2).floor() - 1 && ty == (GRID_HEIGHT/2).floor()) Math.random() > 0.5 ? tx-- : ty++;
-		if (tx == (GRID_WIDTH/2).floor() && ty == (GRID_HEIGHT/2).floor()) Math.random() > 0.5 ? tx++ : ty++;
+	function check_gadgets() {
+		var ip = IntPoint.get(tx, ty);
+		var v = () -> {
+			trace('meteor target', ip);
+			trace('placements', CONSTRUCTION_MNGR.gadget_pos);
+			for (p in CONSTRUCTION_MNGR.gadget_pos) if (p.equals(ip)) return false;
+			return true;
+		}
+		while (!v()) {
+			ip.x = (ip.x + [-1,-1,0,1,1].get_random()).clamp(0, GRID_WIDTH - 1).floor();
+			ip.y = (ip.y + [-1,-1,0,1,1].get_random()).clamp(0, GRID_HEIGHT - 1).floor();
+		}
+		tx = ip.x;
+		ty = ip.y;
 	}
 
 	public function continue_firing() {
@@ -42,7 +53,7 @@ class MeteorManager {
 	function fire() {
 		count++;
 		tx = GRID_WIDTH.get_random().floor();
-		ty = GRID_HEIGHT.get_random().floor();	
+		ty = GRID_HEIGHT.get_random().floor();
 		adjust();
 		warn(3, tx, ty);
 		new FlxTimer().start(2).onComplete = t -> {

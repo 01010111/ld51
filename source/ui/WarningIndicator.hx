@@ -1,4 +1,4 @@
-package fx;
+package ui;
 
 import objects.constructions.Gadget;
 import flixel.util.FlxTimer;
@@ -17,7 +17,7 @@ class WarningIndicator extends Particle {
 	}
 
 	override function fire(options:FireOptions) {
-		if (!Gadget.get(RADAR).alive) return;
+		if (Gadget.get(RADAR) == null || !Gadget.get(RADAR).alive) return;
 		super.fire(options);
 		animation.frameIndex = options.util_int;
 		this.flicker(0.2);

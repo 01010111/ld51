@@ -48,6 +48,8 @@ class CardManager {
 			POWER_UP,
 			POWER_UP,
 			POWER_UP,
+			BOOBYTRAP,
+			BOOBYTRAP,
 		]);
 		shuffle();
 	}
@@ -79,6 +81,9 @@ enum abstract Card(Int) {
 	var PROXY = 2;
 	var DIGGER = 3;
 	var TIME_DILATOR = 4;
+	var RADAR = 7;
+	var CARD_BOX = 8;
+	var TELEPORTER = 9;
 	var RATE_UP = 10;
 	var RANGE_UP = 11;
 	var POWER_UP = 12;

@@ -1,6 +1,11 @@
 package states;
 
+import objects.monsters.Monster;
+import zero.utilities.Vec2;
+import ui.MonsterCount;
 import ui.GoldCount;
+import ui.PlacementIndicator;
+import ui.WarningIndicator;
 import flixel.util.FlxTimer;
 import objects.Gold;
 import haxe.Timer;
@@ -55,7 +60,8 @@ class PlayState extends State
 
 	// logical layers
 	public var projectiles:FlxTypedGroup<Projectile> = new FlxTypedGroup();
-	public var monsters:FlxGroup = new FlxGroup();
+	public var monsters:FlxTypedGroup<Monster> = new FlxTypedGroup();
+	public var m_col:FlxTypedGroup<Monster> = new FlxTypedGroup();
 	public var walls:FlxGroup = new FlxGroup();
 	public var gold:FlxTypedGroup<Gold> = new FlxTypedGroup();
 
@@ -69,7 +75,6 @@ class PlayState extends State
 
 	override function create() {
 		bgColor = 0xFF8a6042;
-		FlxG.plugins.add(new FlxMouseEventManager());
 		FlxG.mouse.useSystemCursor = true;
 		PLAYSTATE = this;
 		add_layers();
@@ -116,24 +121,48 @@ class PlayState extends State
 	function init_stage() {
 		meters = new Meters();
 		GOLD_COUNT = new GoldCount();
+		MONSTER_COUNT = new MonsterCount();
 
 		var level = OgmoUtils.parse_level_json(Assets.getText(Data.stage__json)).get_tile_layer('tiles');
 		tile_layer.add(new Tilemap({ data: level.data2D, tile_width: 16, tile_height: 16, tiles: Images.tiles__png, flags: level.tileFlags2D }));
 
-		new Gadget((GRID_WIDTH/2).floor() - 1, (GRID_HEIGHT/2).floor(), TELEPORTER);
-		new Gadget((GRID_WIDTH/2).floor() - 1, (GRID_HEIGHT/2).floor() - 1, RADAR);
-		new Gadget((GRID_WIDTH/2).floor(), (GRID_HEIGHT/2).floor() - 1, CARD_MACHINE);
-		
 		new FlxTimer().start(2).onComplete = t -> {
+			new ui.Card(RADAR);
+			new ui.Card(CARD_BOX);
+			new ui.Card(TELEPORTER);
 			new ui.Card(TURRET);
-			new ui.Card(TIME_DILATOR);
 		}
 	}
 
+	var n1:Array<FlxPoint>;
+	var n2:Array<FlxPoint>;
+	
 	override function update(e:Float) {
 		super.update(e * timescale);
 		object_layer.sort((i,o1,o2) -> o1.my < o2.my ? -1 : 1);
-		FlxG.collide(monsters,monsters);
+		FlxG.collide(m_col,m_col, (m1:Monster, m2:Monster) -> {
+			var v1 = Vec2.get(m1.velocity.x, m1.velocity.y);
+			var v2 = Vec2.get(m2.velocity.x, m2.velocity.y);
+			v1.length = v2.length = 1;
+			if (v1.dot(v2) < 0.9) {
+				n1 = m1.path.nodes.copy();
+				n2 = m2.path.nodes.copy();
+				var i1 = m1.path.nodeIndex;
+				var i2 = m2.path.nodeIndex;
+				var t1 = m1.target;
+				var t2 = m2.target;
+				m1.path.nodes = n2;
+				m2.path.nodes = n1;
+				@:privateAccess m1.path.nodeIndex = i2;
+				@:privateAccess m2.path.nodeIndex = i1;
+				m1.target = t2;
+				m2.target = t1;
+				if ((m1.collision_timer -= e) <= 0) m_col.remove(m1);
+				if ((m2.collision_timer -= e) <= 0) m_col.remove(m2);
+			}
+			v1.put();
+			v2.put();
+		});
 		FlxG.overlap(walls, projectiles, (w, p) -> p.kill());
 		FlxG.overlap(monsters, projectiles, (m, p) -> {
 			p.kill();
@@ -142,9 +171,6 @@ class PlayState extends State
 		if (flash_layer.alpha > 0) flash_layer.color = [0xfffeb854, 0xffe8ea4a, 0xff58f5b1, 0xffcc68e4, 0xfffe626e].get_random();
 		FlxG.timeScale = hit_stop ? 0 : timescale;
 	}
-
-	public function px_to_gx(v:Float) return ((v - GRID_OFFSET_X)/GRID_SIZE).floor();
-	public function py_to_gy(v:Float) return ((v - GRID_OFFSET_Y)/GRID_SIZE).floor();
 
 	public function hitstop(ms:Int) {
 		Timer.delay(() -> {

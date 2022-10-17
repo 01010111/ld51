@@ -1,5 +1,6 @@
 package objects.monsters;
 
+import zero.utilities.Vec2;
 import zero.utilities.IntPoint;
 import fx.Decal;
 import util.ConstructionManager;
@@ -9,7 +10,9 @@ import objects.constructions.Gadget;
 
 class Monster extends GameObject {
 
-	var target(get, default):Gadget;
+	public var collision_timer:Float = 2;
+
+	public var target(get, default):Gadget;
 	function get_target() {
 		if (target != null && target.alive) return target;
 		Gadget.gadgets.shuffle();
@@ -26,10 +29,12 @@ class Monster extends GameObject {
 		super();
 		MONSTERS.add(this);
 		PLAYSTATE.monsters.add(this);
+		PLAYSTATE.m_col.add(this);
 		drag.set(500, 500);
 		start(side, y);
 		animation.callback = anim_callback;
 		elasticity = 1;
+		mass = 100.get_random(50);
 	}
 
 	function anim_callback(s:String, i:Int, f:Int) {
@@ -74,6 +79,18 @@ class Monster extends GameObject {
 		for (i in 0...3) new FlxTimer().start(i * 0.1).onComplete = t -> PLAYSTATE.poofs.fire({ position: FlxPoint.get(mx, my).add(8.get_random(-8), 8.get_random(-8)) });
 		MONSTERS.remove(this);
 		super.kill();
+		MONSTER_COUNT.amt++;
+	}
+
+	var ptimer = 5.0;
+	override function update(dt:Float) {
+		var d = (last.x - x).abs() + (last.y - y).abs();
+		if (d == 0 && target != null && path != null && path.active && (ptimer -= dt) <= 0) {
+			target = null;
+			get_path();
+			ptimer = 5;
+		}
+		super.update(dt);
 	}
 
 }

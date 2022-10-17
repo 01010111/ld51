@@ -20,7 +20,7 @@ class LittleSlime extends Monster {
 		PLAYSTATE.poofs.fire({ position: FlxPoint.get(mx, my) });
 
 		speed = 40;
-		health = 8;
+		health = 5;
 		hit_frame = 6;
 		power = 1;
 	}

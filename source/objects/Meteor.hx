@@ -1,5 +1,6 @@
 package objects;
 
+import objects.constructions.Gadget;
 import flixel.util.FlxTimer;
 import fx.Decal;
 import zero.utilities.Vec2;
@@ -15,7 +16,8 @@ class Meteor extends FlxSprite {
 		this.make_and_center_hitbox(0,0);
 		FlxTween.tween(this, { x:x2, y:y2 }, 0.5).onComplete = t -> {
 			var c = CONSTRUCTION_MNGR.get_obj_at_coord(tx, ty);
-			if (c != null) {
+			if (c is Gadget) c.hurt(5);
+			else if (c != null) {
 				CONSTRUCTION_MNGR.remove(c);
 				c.kill();
 			}
@@ -57,7 +59,7 @@ class Meteor extends FlxSprite {
 		new Gold(x - 6, y - 6);
 		super.kill();
 		PLAYSTATE.flash(0.2, 0.8);
-		FlxG.camera.shake(0.02, 0.5);
+		FlxG.camera.shake(0.02 * screenshake_amt, 0.5);
 	}
 
 }

@@ -14,12 +14,13 @@ class Gold extends GameObject {
 		super({ x: x, y: y });
 		loadGraphic(Images.gold__png, true, 12, 12);
 		animation.frameIndex = 0;
-		FlxMouseEvent.add(this, g -> get());
+		FlxMouseEvent.add(this, g -> get(), null, null, null, false, true, false);
 		PLAYSTATE.bg_ui_layer.add(this);
 		PLAYSTATE.gold.add(this);
 	}
 	
-	public function get() {
+	public function get(grav = 80) {
+		if (Gadget.get(TELEPORTER) == null) return;
 		if (!Gadget.get(TELEPORTER).available) return;
 		if (!Gadget.get(TELEPORTER).alive) return;
 		if (killed) return;
@@ -28,7 +29,7 @@ class Gold extends GameObject {
 		killed = true;
 		for (i in 0...3) PLAYSTATE.nuggets.fire({ position: FlxPoint.get(x + 6, y + 6), util_amount: 360/3 * i + 45.get_random(-45) });
 		PLAYSTATE.stars.fire({ position: FlxPoint.get(x + 6, y + 6) });
-		FlxTween.cubicMotion(this, x, y, x, y - 80, Gadget.get(TELEPORTER).mx-4, Gadget.get(TELEPORTER).my-80, Gadget.get(TELEPORTER).mx-4, Gadget.get(TELEPORTER).my-4, 0.75).onComplete = t -> {
+		FlxTween.cubicMotion(this, x, y, x, y - grav, Gadget.get(TELEPORTER).mx-4, Gadget.get(TELEPORTER).my-grav, Gadget.get(TELEPORTER).mx-4, Gadget.get(TELEPORTER).my-4, grav.map(0, 80, 0, 0.75)).onComplete = t -> {
 			PLAYSTATE.stars.fire({ position: FlxPoint.get(Gadget.get(TELEPORTER).mx, Gadget.get(TELEPORTER).my), velocity: FlxPoint.get(0, -10) });
 			if (Gadget.get(TELEPORTER).alive) Gadget.get(TELEPORTER).util++;
 			kill();
