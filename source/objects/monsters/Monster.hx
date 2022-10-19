@@ -10,7 +10,7 @@ import objects.constructions.Gadget;
 
 class Monster extends GameObject {
 
-	public var collision_timer:Float = 2;
+	public var collision_timer:Float = 0.25;
 
 	public var target(get, default):Gadget;
 	function get_target() {

@@ -22,13 +22,18 @@ class MenuItem extends FlxGroup {
 	var init_value:Float = 0;
 	var init_bool:Bool = false;
 
-	// slider vars
+	// multiple uses
 	var slider_handle:FlxSprite;
+	
+	// slider vars
 	var value:Float;
 
 	// toggle vars
 	var tog_yes:FlxSprite;
 	var tog_no:FlxSprite;
+
+	// button vars
+	var bg_white:FlxSprite;
 
 	public function new(
 		x:Float,
