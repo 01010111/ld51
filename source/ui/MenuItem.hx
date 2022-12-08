@@ -34,6 +34,7 @@ class MenuItem extends FlxGroup {
 
 	// button vars
 	var bg_white:FlxSprite;
+	var pressed:Bool = false;
 
 	public function new(
 		x:Float,
@@ -129,7 +130,17 @@ class MenuItem extends FlxGroup {
 	}
 
 	function make_button() {
-		
+		var slider_bg = new FlxSprite(x + 112, y, Images.slide_bg__png);
+		add(slider_bg);
+
+		bg_white = new FlxSprite(x + 112, y);
+		bg_white.makeGraphic(1, 12);
+		add(bg_white);
+
+		slider_handle = new FlxSprite(x + 112, y + 6, Images.slider_handle__png);
+		slider_handle.make_and_center_hitbox(0,0);
+		slider_handle.scale.set(0.25, 0.25);
+		add(slider_handle);
 	}
 
 	override function update(elapsed:Float) {
@@ -156,7 +167,9 @@ class MenuItem extends FlxGroup {
 	}
 
 	function update_button(e) {
-
+		slider_handle.x = (FlxG.mouse.x).clamp(x + 112, x + 112 + 100);
+		var v = slider_handle.x.map(x + 112, x + 112 + 100, 0, 1);
+		if (v == 1) on_press();
 	}
 
 }
