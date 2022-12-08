@@ -24,7 +24,7 @@ class Card extends FlxSprite {
 		animation.frameIndex = cast card_type;
 		CARDS.add(this);
 		FlxMouseEvent.add(this, c -> pickup(), null, c -> over(), c -> out());
-		PLAYSTATE.fg_ui_layer.add(this);
+		PLAYSTATE.card_layer.add(this);
 	}
 
 	override function update(elapsed:Float) {
@@ -59,6 +59,7 @@ class Card extends FlxSprite {
 	}
 
 	function pickup() {
+		if (!PLAYSTATE.available) return;
 		held = true;
 		mouseover = false;
 	}
@@ -82,7 +83,7 @@ class Card extends FlxSprite {
 		var x = FlxG.mouse.x.px_to_gx();
 		var y = FlxG.mouse.y.py_to_gy();
 		var c = CONSTRUCTION_MNGR.get_obj_at_coord(x, y);
-		var can_place = CONSTRUCTION_MNGR.can_place(x, y);
+		var can_place = CONSTRUCTION_MNGR.can_place(x, y) && PLAYSTATE.available;
 		switch card_type {
 			case WALL:
 				if (can_place) {

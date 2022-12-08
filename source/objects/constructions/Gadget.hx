@@ -1,5 +1,8 @@
 package objects.constructions;
 
+import ui.FadeRect;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import zero.utilities.Vec2;
 import flixel.input.mouse.FlxMouseEvent;
 import flixel.util.FlxTimer;
@@ -122,8 +125,16 @@ class Gadget extends Construction {
 	override function kill() {
 		for (i in 1...4) new FlxTimer().start(i * 0.25).onComplete = t -> PLAYSTATE.explosions.fire({ position: FlxPoint.get(mx, my).add(10.get_random(-10), 10.get_random(-10)) });
 		for (i in 0...3) new FlxTimer().start(i * 0.25).onComplete = t -> PLAYSTATE.stars.fire({ position: getMidpoint().add(0, -16 * i) });
+		check_others();
 		super.kill();
 		MONSTERS.refresh();
+	}
+
+	function check_others() {
+		for (t => g in gadgets) {
+			if (g.alive) return;
+		}
+		PLAYSTATE.game_over(getMidpoint());
 	}
 
 }

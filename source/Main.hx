@@ -5,13 +5,10 @@ import states.*;
 import shaders.Grain;
 import openfl.display.Sprite;
 import flixel.FlxGame;
-import zero.utilities.ECS;
 import zero.utilities.Timer;
 import zero.utilities.SyncedSin;
-import zero.flixel.input.FamiController;
 #if PIXEL_PERFECT
 import flixel.FlxG;
-import flixel.system.FlxAssets.FlxShader;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
 #end
@@ -32,6 +29,7 @@ class Main extends Sprite
 			SyncedSin.update(dt);
 			grain.update(dt);
 		}).listen('preupdate');
+		FlxG.game.stage.quality = StageQuality.LOW;
 		FlxG.game.setFilters([
 			new ShaderFilter(new Hq2x()),
 			new ShaderFilter(grain = new Grain(0.01)),

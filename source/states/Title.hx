@@ -30,6 +30,8 @@ class Title extends FlxState {
 	var aux_objects:Array<FlxBasic> = [];
 
 	override function create() {
+		bgColor = 0xff000000;
+
 		title = new FlxSprite(0,0,Images.title__png);
 		title.scale.set(0.2, 0.2);
 		title.make_and_center_hitbox(0,0);

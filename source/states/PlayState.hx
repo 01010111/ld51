@@ -1,5 +1,7 @@
 package states;
 
+import flixel.tweens.FlxEase;
+import ui.FadeRect;
 import objects.monsters.Monster;
 import zero.utilities.Vec2;
 import ui.MonsterCount;
@@ -42,6 +44,7 @@ class PlayState extends State
 	public var bg_ui_layer:FlxGroup;
 	public var object_layer:FlxTypedGroup<GameObject>;
 	public var foreground_layer:FlxGroup;
+	public var card_layer:FlxGroup;
 	public var fg_ui_layer:FlxGroup;
 	public var flash_layer:FlxSprite;
 
@@ -72,6 +75,7 @@ class PlayState extends State
 	public var meters:Meters;
 	public var timescale:Float = 1;
 	public var hit_stop:Bool = false;
+	public var available:Bool = true;
 
 	override function create() {
 		bgColor = 0xFF8a6042;
@@ -101,6 +105,7 @@ class PlayState extends State
 		add(placement_indicator = new PlacementIndicator());
 		add(stars = new ParticleEmitter(() -> new Star()));
 		add(beams = new ParticleEmitter(() -> new Beam()));
+		add(card_layer = new FlxGroup());
 		add(fg_ui_layer = new FlxGroup());
 		add(spotlights = new ParticleEmitter(() -> new Spotlight()));
 		add(flash_layer = new FlxSprite());
@@ -187,6 +192,17 @@ class PlayState extends State
 	function set_score(v:Int) {
 		GOLD_COUNT.amt = v;
 		return score = v;
+	}
+
+	public function game_over(?p:FlxPoint) {
+		if (p != null) spotlights.fire({ position: p, util_amount: 0.01 });
+		hitstop(250);
+		available = false;
+		fg_ui_layer.visible = false;
+		new FlxTimer().start(3, t -> {
+			add(new FadeRect(OUTRO, 5, FlxEase.quadIn, () -> FlxG.switchState(new states.Title())));
+			FlxTween.tween(FlxG.camera.scroll, { y: -FlxG.height }, 5, { ease: FlxEase.quadIn });
+		});
 	}
 
 }
