@@ -85,6 +85,8 @@ class PlayState extends State
 		init_managers();
 		init_stage();
 		FlxG.camera.fade(0xFF000000, 1, true);
+
+		new FlxTimer().start(1).onComplete = t -> openSubState(new Message('Test message'));
 	}
 
 	function add_layers() {
