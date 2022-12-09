@@ -15,6 +15,7 @@ class Button extends FlxSprite {
 		over = false;
 		origin.set(0,0);
 		scale.set(0.25, 0.25);
+		setSize(64, 24);
 
 		FlxMouseEvent.add(this, b -> on_click(), null, b -> over = true, b -> over = false, false, true, false);
 	}

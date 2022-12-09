@@ -4,19 +4,38 @@ import flixel.text.FlxText;
 
 class MessageText extends FlxText {
 
-	var msg:String;
+	var msg:Array<String>;
+	var om:String;
 	var callback:Void -> Void;
+	var zoom:Float = 4;
+	var timer:Float = 0.1;
+	var done:Bool = false;
 
 	public function new(msg:String, callback:Void -> Void) {
-		super(-128, 64, 256 * 4, '');
-		setFormat('IBM Plex Mono Bold', 9 * 4, 0xFFFFFF, LEFT);
-		scale.set(0.25, 0.25);
+		super(-256, 64, 256 * zoom, '');
+		setFormat('IBM Plex Mono Bold', (9 * zoom).round(), 0xFFFFFF, LEFT);
+		scale.set(1/zoom, 1/zoom);
 		scrollFactor.set(0,0);
-		
-		// todo - animate this:
-		text = msg;
+		this.msg = msg.split('');
+		om = msg;
+		this.callback = callback;
+	}
+
+	override function update(elapsed:Float) {
+		super.update(elapsed);
+		if (FlxG.mouse.justPressed) finish();
+		if (done) return;
+		if ((timer -= elapsed) > 0) return;
+		text += msg.shift();
+		if (msg.length > 0) return;
+		finish();
+	}
+
+	function finish() {
+		if (done) return;
+		done = true;
+		text = om;
 		callback();
-		trace(msg);
 	}
 
 }

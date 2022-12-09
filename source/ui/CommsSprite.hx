@@ -11,7 +11,7 @@ class CommsSprite extends FlxSprite {
 	public function new(parent:FlxGroup) {
 		super(128 + 12, 32 + 12);
 		loadGraphic(Images.ui_incoming_transmission_icon__png, true, 96, 96);
-		animation.add('play', [0,1,2,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,3,4,4,4,4,4,4,4,4,4,4,4,4,4], 24, true);
+		animation.add('play', [0,1,2,3,4,3,4,3,4,3,4,3,4,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4], 24, true);
 		animation.play('play');
 		this.make_and_center_hitbox(0, 0);
 		scale.set(0.25, 0.25);
