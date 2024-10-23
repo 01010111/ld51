@@ -68,7 +68,7 @@ class PlayState extends State
 	public var walls:FlxGroup = new FlxGroup();
 	public var gold:FlxTypedGroup<Gold> = new FlxTypedGroup();
 
-	// game stuff 
+	// game stuff
 	public var score(default, set):Int = 0;
 	public var field:FlxRect = FlxRect.get(GRID_OFFSET_X, GRID_OFFSET_Y, GRID_WIDTH * GRID_SIZE, GRID_HEIGHT * GRID_SIZE);
 	public var placement_indicator:PlacementIndicator;
@@ -115,7 +115,7 @@ class PlayState extends State
 		flash_layer.blend = ADD;
 		flash_layer.alpha = 0;
 	}
-	
+
 	function init_managers() {
 		CONSTRUCTION_MNGR = new ConstructionManager();
 		WALL_MNGR = new WallManager();
@@ -143,7 +143,7 @@ class PlayState extends State
 
 	var n1:Array<FlxPoint>;
 	var n2:Array<FlxPoint>;
-	
+
 	override function update(e:Float) {
 		super.update(e * timescale);
 		object_layer.sort((i,o1,o2) -> o1.my < o2.my ? -1 : 1);
@@ -160,8 +160,8 @@ class PlayState extends State
 				var t2 = m2.target;
 				m1.path.nodes = n2;
 				m2.path.nodes = n1;
-				@:privateAccess m1.path.nodeIndex = i2;
-				@:privateAccess m2.path.nodeIndex = i1;
+				@:privateAccess m1.path.nextIndex = i2;
+				@:privateAccess m2.path.nextIndex = i1;
 				m1.target = t2;
 				m2.target = t1;
 				if ((m1.collision_timer -= e) <= 0) m_col.remove(m1);

@@ -81,6 +81,8 @@ enum abstract Card(Int) {
 	var PROXY = 2;
 	var DIGGER = 3;
 	var TIME_DILATOR = 4;
+	var DECOY = 5;
+	var SPARK_PLUG = 6;
 	var RADAR = 7;
 	var CARD_BOX = 8;
 	var TELEPORTER = 9;
@@ -89,4 +91,7 @@ enum abstract Card(Int) {
 	var POWER_UP = 12;
 	var BOOBYTRAP = 13;
 	var SHIELD = 14;
+	var TEMP_BOOST = 15;
+	var REPAIR = 16;
+	var EXPLODE = 17;
 }

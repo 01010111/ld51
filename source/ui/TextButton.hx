@@ -4,7 +4,7 @@ import flixel.input.mouse.FlxMouseEvent;
 import flixel.text.FlxText;
 
 class TextButton extends FlxText {
-	
+
 	var ox:Float = 0;
 
 	public function new(x:Float, y:Float, text:String, on_click:Void -> Void) {
