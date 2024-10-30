@@ -88,10 +88,10 @@ class Title extends FlxState {
 		title.setPosition(92, 64);
 
 		group.add(new Button(384, 232, LETS_GO, () -> if (check(MAIN)) exit()));
-		group.add(new TextButton(32, 168, 'CHECKLIST', () -> if (check(MAIN)) show_checklist()));
-		group.add(new TextButton(32, 192, 'DECK', () -> if (check(MAIN)) show_deck()));
+		// group.add(new TextButton(32, 168, 'CHECKLIST', () -> if (check(MAIN)) show_checklist()));
+		// group.add(new TextButton(32, 192, 'DECK', () -> if (check(MAIN)) show_deck()));
 		group.add(new TextButton(32, 216, 'OPTIONS', () -> if (check(MAIN)) show_options()));
-		#if sys 
+		#if sys
 		group.add(new TextButton(32, 240, 'QUIT', () -> if (check(MAIN)) System.exit(0)));
 		#end
 	}
@@ -122,7 +122,7 @@ class Title extends FlxState {
 		object.y += FlxG.height;
 		aux_objects.push(object);
 	}
-	
+
 	function show_checklist() {
 		reset_aux_group();
 		add_aux(new Button(384, 232, GOT_IT, () -> if (check(SUB)) show_title()));
@@ -193,21 +193,21 @@ class Title extends FlxState {
 		available = false;
 		var smokes = new ParticleEmitter(() -> new Smoke());
 		for (i in 0...16) new FlxTimer().start(0.01, t -> smokes.fire({ position: FlxPoint.get(FlxG.width.get_random(-FlxG.width), FlxG.height + 128) }), 0);
-		
+
 		var screen = new FlxSprite();
 		screen.makeGraphic(FlxG.width, FlxG.height, 0xFF000000);
 		screen.alpha = 0;
-		
+
 		add(smokes);
 		add(screen);
-		
+
 		FlxTween.tween(screen, { alpha: 1 }, 2, { ease: FlxEase.expoIn, onComplete: t -> FlxG.switchState(new PlayState()) });
 	}
 
 }
 
 class Smoke extends Particle {
-	
+
 	public function new() {
 		super();
 		loadGraphic(Images.smoke__png);
@@ -233,7 +233,7 @@ class Smoke extends Particle {
 }
 
 class BGExplosion extends Particle {
-	
+
 	static var _i = 0;
 
 	var alpha_m1:Float = 0;

@@ -6,11 +6,13 @@ import objects.Meteor;
 import flixel.util.FlxTimer;
 
 class MeteorManager {
-	
+
 	var tx:Int;
 	var ty:Int;
 	var do_continue:Bool = false;
 	var count:Int = 0;
+
+	public var active:Bool = true;
 
 	public function new() {}
 
@@ -31,8 +33,8 @@ class MeteorManager {
 	function check_gadgets() {
 		var ip = IntPoint.get(tx, ty);
 		var v = () -> {
-			trace('meteor target', ip);
-			trace('placements', CONSTRUCTION_MNGR.gadget_pos);
+			// trace('meteor target', ip);
+			// trace('placements', CONSTRUCTION_MNGR.gadget_pos);
 			for (p in CONSTRUCTION_MNGR.gadget_pos) if (p.equals(ip)) return false;
 			return true;
 		}
@@ -63,6 +65,7 @@ class MeteorManager {
 				adjust();
 				warn(1, tx, ty);
 				new FlxTimer().start(2).onComplete = t -> {
+					if (!active) return;
 					adjust();
 					warn(0, tx, ty);
 					new FlxTimer().start(2).onComplete = t -> new Meteor(
@@ -79,7 +82,7 @@ class MeteorManager {
 	}
 
 	function warn(r:Int,x:Int,y:Int) {
-		PLAYSTATE.warn_ind.fire({ 
+		PLAYSTATE.warn_ind.fire({
 			position: FlxPoint.get(
 				x * GRID_SIZE + GRID_SIZE/2 + GRID_OFFSET_X,
 				y * GRID_SIZE + GRID_SIZE/2 + GRID_OFFSET_Y

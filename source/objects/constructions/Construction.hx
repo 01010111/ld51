@@ -1,5 +1,6 @@
 package objects.constructions;
 
+import flixel.FlxSprite;
 import openfl.display.IBitmapDrawable;
 import fx.Decal;
 import flixel.util.FlxTimer;
@@ -24,6 +25,15 @@ class Construction extends GameObject {
 	public var special_properties:Array<SpecialProperty> = [];
 	public var allowed_special_properties:Array<SpecialProperty> = [];
 
+	public var shield:FlxSprite;
+	public var shielded(default, set):Bool = false;
+	function set_shielded(v) {
+		if (v == shielded) return shielded;
+		if (v) shield = Shield.get().set(mx, my, this);
+		if (!v) shield.kill();
+		return shielded = v;
+	}
+
 	public function new(x:Int, y:Int) {
 		super({
 			x: GRID_OFFSET_X + x * GRID_SIZE,
@@ -38,6 +48,10 @@ class Construction extends GameObject {
 	}
 
 	override function kill() {
+		if (shielded) {
+			shielded = false;
+			return;
+		}
 		if (boobytrapped) {
 			var waves:Int = 3;
 			var bpw:Int = 8;

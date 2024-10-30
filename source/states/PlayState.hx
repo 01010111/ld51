@@ -1,5 +1,6 @@
 package states;
 
+import objects.Meteor;
 import flixel.tweens.FlxEase;
 import ui.FadeRect;
 import objects.monsters.Monster;
@@ -15,7 +16,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.math.FlxRect;
 import flixel.tweens.FlxTween;
-import flixel.input.mouse.FlxMouseEventManager;
 import fx.*;
 import objects.Bullet;
 import objects.GameObject;
@@ -86,7 +86,7 @@ class PlayState extends State
 		init_stage();
 		FlxG.camera.fade(0xFF000000, 1, true);
 
-		new FlxTimer().start(1).onComplete = t -> openSubState(new Message('Test message'));
+		// new FlxTimer().start(1).onComplete = t -> openSubState(new Message('Test message'));
 	}
 
 	function add_layers() {
@@ -129,6 +129,7 @@ class PlayState extends State
 		meters = new Meters();
 		GOLD_COUNT = new GoldCount();
 		MONSTER_COUNT = new MonsterCount();
+		TIMER = new ui.Timer();
 
 		var level = OgmoUtils.parse_level_json(Assets.getText(Data.stage__json)).get_tile_layer('tiles');
 		tile_layer.add(new Tilemap({ data: level.data2D, tile_width: 16, tile_height: 16, tiles: Images.tiles__png, flags: level.tileFlags2D }));
@@ -138,6 +139,12 @@ class PlayState extends State
 			new ui.Card(CARD_BOX);
 			new ui.Card(TELEPORTER);
 			new ui.Card(TURRET);
+			new ui.Card(DECOY);
+			new ui.Card(SHIELD);
+			new ui.Card(SHIELD);
+			new ui.Card(SHIELD);
+			new ui.Card(SHIELD);
+			new ui.Card(SHIELD);
 		}
 	}
 
@@ -177,6 +184,8 @@ class PlayState extends State
 		});
 		if (flash_layer.alpha > 0) flash_layer.color = [0xfffeb854, 0xffe8ea4a, 0xff58f5b1, 0xffcc68e4, 0xfffe626e].get_random();
 		FlxG.timeScale = hit_stop ? 0 : timescale;
+
+		if (FlxG.keys.justPressed.R) apocalypse();
 	}
 
 	public function hitstop(ms:Int) {
@@ -197,14 +206,44 @@ class PlayState extends State
 	}
 
 	public function game_over(?p:FlxPoint) {
+		METEORS.active = false;
 		if (p != null) spotlights.fire({ position: p, util_amount: 0.01 });
 		hitstop(250);
+		timescale = 1;
 		available = false;
 		fg_ui_layer.visible = false;
 		new FlxTimer().start(3, t -> {
-			add(new FadeRect(OUTRO, 5, FlxEase.quadIn, () -> FlxG.switchState(new states.Title())));
+			trace(MONSTER_COUNT.amt, GOLD_COUNT.amt, CONSTRUCTION_MNGR.amt);
+			add(new FadeRect(OUTRO, 5, FlxEase.quadIn, () -> FlxG.switchState(new states.GameOver())));
 			FlxTween.tween(FlxG.camera.scroll, { y: -FlxG.height }, 5, { ease: FlxEase.quadIn });
 		});
+	}
+
+	public function apocalypse() {
+		var pos = [];
+		for (j in 0...14) for (i in 0...18) {
+			if (CONSTRUCTION_MNGR.can_place(i, j)) continue;
+			pos.push({x: i, y: j});
+		}
+		pos.shuffle();
+		var t = 0.0;
+		for (p in pos) {
+			new FlxTimer().start(t).onComplete = t -> new Meteor(
+				GRID_OFFSET_X + p.x * GRID_SIZE + GRID_SIZE/2 + FlxG.width.get_random_gaussian(-FlxG.width),
+				GRID_OFFSET_Y + p.y * GRID_SIZE + GRID_SIZE/2 - FlxG.height,
+				GRID_OFFSET_X + p.x * GRID_SIZE + GRID_SIZE/2,
+				GRID_OFFSET_Y + p.y * GRID_SIZE + GRID_SIZE/2,
+				p.x, p.y
+			);
+			if (CONSTRUCTION_MNGR.get_obj_at_coord(p.x, p.y).shielded) new FlxTimer().start(t + 1).onComplete = t -> new Meteor(
+				GRID_OFFSET_X + p.x * GRID_SIZE + GRID_SIZE/2 + FlxG.width.get_random_gaussian(-FlxG.width),
+				GRID_OFFSET_Y + p.y * GRID_SIZE + GRID_SIZE/2 - FlxG.height,
+				GRID_OFFSET_X + p.x * GRID_SIZE + GRID_SIZE/2,
+				GRID_OFFSET_Y + p.y * GRID_SIZE + GRID_SIZE/2,
+				p.x, p.y
+			);
+			t += 0.5.get_random(0.25);
+		}
 	}
 
 }

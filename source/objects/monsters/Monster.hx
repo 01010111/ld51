@@ -15,6 +15,7 @@ class Monster extends GameObject {
 	public var target(get, default):Gadget;
 	function get_target() {
 		if (target != null && target.alive) return target;
+		for (g in Gadget.gadgets) if (g.gadget_type == DECOY) return target = g;
 		Gadget.gadgets.shuffle();
 		for (g in Gadget.gadgets) if (g.alive) return target = g;
 		return null;
@@ -39,7 +40,7 @@ class Monster extends GameObject {
 
 	function anim_callback(s:String, i:Int, f:Int) {
 		if (f == hit_frame) {
-			var c = Gadget.get_nearest(mx, my);
+			var c = Gadget.get_nearest(mx, my - 4);
 			if (c == null) return;
 			if (c is Gadget) {
 				c.hurt(power);
@@ -71,7 +72,7 @@ class Monster extends GameObject {
 		var nodes = target == null ? [IntPoint.get(wx, wy)] : CONSTRUCTION_MNGR.path(wx, wy, target.wx, target.wy);
 		if (path == null) path = new FlxPath();
 		if (path.active) path.cancel();
-		path.start([for (node in nodes) FlxPoint.get(node.x * GRID_SIZE + GRID_SIZE/2, node.y * GRID_SIZE + GRID_SIZE/2)], speed).onComplete = p -> {};
+		path.start([for (node in nodes) FlxPoint.get(node.x * GRID_SIZE + GRID_SIZE/2, node.y * GRID_SIZE + GRID_SIZE/2 + 4)], speed).onComplete = p -> {};
 	}
 
 	override function kill() {

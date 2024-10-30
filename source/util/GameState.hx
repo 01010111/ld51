@@ -12,7 +12,7 @@ var screenshake_amt:Float;
 private var save:FlxSave = new FlxSave();
 
 function load_game() {
-	save.bind('planet-monster-2022');
+	save.bind('planet-monster-2024');
 	if (save.data.player_deck == null) return init_game();
 	starter_cards = save.data.starter_cards;
 	player_deck = save.data.player_deck;
@@ -27,6 +27,7 @@ function save_game() {
 	save.data.vol_sound = vol_sound;
 	save.data.vol_music = vol_music;
 	save.data.screenshake_amt = screenshake_amt;
+	save.flush();
 }
 
 function reset_game() {
@@ -50,7 +51,7 @@ function reset_game() {
 }
 
 function unlock_all() {
-	
+
 }
 
 function init_game() {

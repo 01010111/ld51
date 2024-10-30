@@ -10,16 +10,24 @@ import flixel.FlxSprite;
 class Meteor extends FlxSprite {
 
 	var trail_timer:Float = 0;
-	
+	var spawn_gold:Bool;
+
 	public function new(x1:Float, y1:Float, x2:Float, y2:Float, tx:Int, ty:Int) {
 		super(x1, y1, Images.meteor__png);
 		this.make_and_center_hitbox(0,0);
 		FlxTween.tween(this, { x:x2, y:y2 }, 0.5).onComplete = t -> {
+			spawn_gold = true;
 			var c = CONSTRUCTION_MNGR.get_obj_at_coord(tx, ty);
-			if (c is Gadget) c.hurt(5);
-			else if (c != null) {
-				CONSTRUCTION_MNGR.remove(c);
-				c.kill();
+			/*if (c is Gadget) c.hurt(5);
+			else*/ if (c != null) {
+				if (c.shielded) {
+					c.shielded = false;
+					spawn_gold = false;
+				}
+				else {
+					CONSTRUCTION_MNGR.remove(c);
+					c.kill();
+				}
 			}
 			kill();
 		}
@@ -54,12 +62,15 @@ class Meteor extends FlxSprite {
 			});
 		}
 		PLAYSTATE.explosions.fire({ position: FlxPoint.get(x,y) });
-		new Decal(CRATER, x, y);
 		for (monster in MONSTERS.get_monsters_in_range(x, y, 24)) monster.kill();
-		new Gold(x - 6, y - 6);
+		if (spawn_gold) {
+			new Decal(CRATER, x, y);
+			new Gold(x - 6, y - 6);
+		}
 		super.kill();
 		PLAYSTATE.flash(0.2, 0.8);
 		FlxG.camera.shake(0.02 * screenshake_amt, 0.5);
+		if (TIMER.time > 0) TIMER.active = true;
 	}
 
 }

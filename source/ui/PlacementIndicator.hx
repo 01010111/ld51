@@ -39,12 +39,13 @@ class PlacementIndicator extends FlxGroup {
 	public function revise(x:Int, y:Int, r:Int, card:Card) {
 		var c = CONSTRUCTION_MNGR.get_obj_at_coord(x, y);
 		var a = switch card {
-			case WALL, TURRET, PROXY, DIGGER, TIME_DILATOR, RADAR, CARD_BOX, TELEPORTER: CONSTRUCTION_MNGR.can_place(x, y);
+			case WALL, TURRET, PROXY, DIGGER, TIME_DILATOR, RADAR, CARD_BOX, TELEPORTER, DECOY: CONSTRUCTION_MNGR.can_place(x, y);
 			case RATE_UP: c != null && c.rate < c.max_rate;
 			case RANGE_UP: c != null && c.range < c.max_range;
 			case POWER_UP: c != null && c.power < c.max_power;
 			case BOOBYTRAP: c != null && !c.boobytrapped;
 			case SHIELD: c != null;
+			default: false;
 		}
 
 		circle.visible = a && r > 0;
@@ -55,5 +56,5 @@ class PlacementIndicator extends FlxGroup {
 		placement.setPosition(x * 16 + GRID_OFFSET_X, y * 16 + GRID_OFFSET_Y);
 		circle.setPosition(x * 16 + GRID_OFFSET_X + 8, y * 16 + GRID_OFFSET_Y + 8);
 	}
-	
+
 }

@@ -10,8 +10,9 @@ class ConstructionManager {
 
 	var vacancies:Array<Array<Int>> = [for (j in 0...GRID_HEIGHT) [for (i in 0...GRID_WIDTH) 0]];
 	var objects_by_id:Map<Int,Construction> = [];
-	
+
 	public var gadget_pos:Array<IntPoint> = [];
+	public var amt:Int = 0;
 
 	public function new() {}
 
@@ -64,6 +65,7 @@ class ConstructionManager {
 		objects_by_id.set(get_id(x, y), object);
 		if (object is Gadget) gadget_pos.push(IntPoint.get(x, y));
 		else vacancies[y][x] = 1;
+		amt++;
 		return true;
 	}
 

@@ -9,7 +9,7 @@ import flixel.util.FlxTimer;
 import flixel.FlxSprite;
 
 class Gadget extends Construction {
-	
+
 	public static function get(type:GadgetType) return gadget_map[type];
 	static var gadget_map:Map<GadgetType, Gadget> = [];
 	public static var gadgets:Array<Gadget> = [];
@@ -34,6 +34,14 @@ class Gadget extends Construction {
 
 	public var util(default, set):Int = 0;
 
+	public var shield_health:Float;
+	public var max_shield_health:Float = 20;
+
+	override function set_shielded(v:Bool):Bool {
+		if (v) shield_health = max_shield_health;
+		return super.set_shielded(v);
+	}
+
 	override function get_my():Float {
 		return super.get_my() - 8;
 	}
@@ -42,38 +50,47 @@ class Gadget extends Construction {
 		super(x, y);
 		gadget_type = type;
 		gadget_map.set(type, this);
-		loadGraphic(Images.gadgets__png, true, 16, 32);
-		switch type {
-			case TELEPORTER:
-				animation.frameIndex = 0;
-			case RADAR:
-				animation.add('radar', [4,5,6,5], 8);
-				animation.play('radar');
-			case CARD_MACHINE:
-				animation.frameIndex = 7;
-				st = new FlxSprite();
-				st.loadGraphic(Images.numbers__png, true, 6, 7);
-				FlxMouseEvent.add(this, g -> {
-					if (util > 0 && CARDS.hand.length < 8) {
-						new ui.Card();
-						util--;
-					}
-				});
+		if (type == DECOY) {
+			loadGraphic(Images.decoy__png, true, 32, 32);
+			animation.add('play', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4]);
+			animation.play('play');
+			health = 20;
+		}
+		else {
+			loadGraphic(Images.gadgets__png, true, 16, 32);
+			switch type {
+				case TELEPORTER:
+					animation.frameIndex = 0;
+				case RADAR:
+					animation.add('radar', [4,5,6,5], 8);
+					animation.play('radar');
+				case CARD_MACHINE:
+					animation.frameIndex = 7;
+					st = new FlxSprite();
+					st.loadGraphic(Images.numbers__png, true, 6, 7);
+					FlxMouseEvent.add(this, g -> {
+						if (util > 0 && CARDS.hand.length < 8) {
+							new ui.Card();
+							util--;
+						}
+					});
+				default:
+			}
+			health = max_health;
 		}
 		this.make_anchored_hitbox(16, 16);
 		gadgets.push(this);
-		health = max_health;
 		util = 0;
 		if (CONSTRUCTION_MNGR.gadget_pos.length == 3) METEORS.start();
 	}
 
 	function set_util(v:Int) {
 		switch gadget_type {
-			case RADAR:
+			case RADAR, DECOY:
 			case TELEPORTER:
 				animation.frameIndex = v;
 				if (v == 3) teleport();
-			case CARD_MACHINE: 
+			case CARD_MACHINE:
 				v = v.min(99).floor();
 				stamp_num(v);
 		}
@@ -118,20 +135,28 @@ class Gadget extends Construction {
 	}
 
 	override function hurt(damage:Float) {
+		if (shielded) {
+			shield_health -= damage;
+			if (shield_health > 0) return;
+			shielded = false;
+			damage = -shield_health;
+		}
 		super.hurt(damage);
-		PLAYSTATE.meters.refresh(gadget_type, health/max_health);
+		if (gadget_type != DECOY) PLAYSTATE.meters.refresh(gadget_type, health/max_health);
 	}
 
 	override function kill() {
+		if (gadget_type == DECOY) gadgets.remove(this);
 		for (i in 1...4) new FlxTimer().start(i * 0.25).onComplete = t -> PLAYSTATE.explosions.fire({ position: FlxPoint.get(mx, my).add(10.get_random(-10), 10.get_random(-10)) });
 		for (i in 0...3) new FlxTimer().start(i * 0.25).onComplete = t -> PLAYSTATE.stars.fire({ position: getMidpoint().add(0, -16 * i) });
-		check_others();
 		super.kill();
+		check_others();
 		MONSTERS.refresh();
 	}
 
 	function check_others() {
 		for (t => g in gadgets) {
+			if (g.gadget_type == DECOY) continue;
 			if (g.alive) return;
 		}
 		PLAYSTATE.game_over(getMidpoint());
@@ -143,4 +168,5 @@ enum GadgetType {
 	TELEPORTER;
 	RADAR;
 	CARD_MACHINE;
+	DECOY;
 }

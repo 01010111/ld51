@@ -4,11 +4,12 @@ import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEvent;
 
 class Button extends FlxSprite {
-	
+
 	var text:ButtonText;
 	var over(default, set):Bool;
+	var clicked:Bool = false;
 
-	public function new(x:Float, y:Float, text:ButtonText, on_click:Void -> Void) {
+	public function new(x:Float, y:Float, text:ButtonText, on_click:Void -> Void, click_once:Bool = true) {
 		super(x, y);
 		loadGraphic(Images.buttons__png, true, 64 * 4, 24 * 4);
 		this.text = text;
@@ -17,7 +18,12 @@ class Button extends FlxSprite {
 		scale.set(0.25, 0.25);
 		setSize(64, 24);
 
-		FlxMouseEvent.add(this, b -> on_click(), null, b -> over = true, b -> over = false, false, true, false);
+		FlxMouseEvent.add(this, b -> {
+			if (click_once && clicked) return;
+			on_click();
+			clicked = true;
+			FlxSpriteUtil.flicker(this, 0.16);
+		}, null, b -> over = true, b -> over = false, false, true, false);
 	}
 
 	function set_over(v) {
